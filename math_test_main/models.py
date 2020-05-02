@@ -5,11 +5,14 @@ from django.contrib.auth.models import User
 # Create your models here.
 
 class Set(models.Model):
-    name = models.CharField()
+    name = models.CharField(max_length=50)
 
     class Meta:
         verbose_name = "Сет с задачами"
         verbose_name_plural = "Сеты с задачами"
+
+    def __str__(self):
+        return self.name
 
 
 class Task(models.Model):
@@ -22,15 +25,21 @@ class Task(models.Model):
         verbose_name = "Задача"
         verbose_name_plural = "Задачи"
 
+    def __str__(self):
+        return self.problem[:50]
+
 
 class TestTemplate(models.Model):
     # ссылка на автора теста
     author = models.ForeignKey('Profile', on_delete=models.SET_NULL, null=True)
-    name = models.CharField()
+    name = models.CharField(max_length=50)
 
     class Meta:
         verbose_name = "Шаблон теста"
         verbose_name_plural = "Шаблоны тестов"
+
+    def __str__(self):
+        return self.name
 
 
 class Set2Test(models.Model):
@@ -41,6 +50,13 @@ class Set2Test(models.Model):
     set_id = models.ForeignKey('Set', on_delete=models.PROTECT)
     index = models.PositiveSmallIntegerField()
 
+    class Meta:
+        verbose_name = "тип задач в тесте"
+        verbose_name_plural = "типы задач в тестах"
+
+    def __str__(self):
+        return f'{self.index} задача в {self.test_id}'
+
 
 class TestItem(models.Model):
     student_id = models.ForeignKey('Profile', on_delete=models.CASCADE)
@@ -49,6 +65,9 @@ class TestItem(models.Model):
     class Meta:
         verbose_name = "Экземпляр теста"
         verbose_name_plural = "Экземпляры тестов"
+
+    def __str__(self):
+        return f'тест {self.template_id} для ученика {self.student_id.user.id}'
 
 
 class Profile(models.Model):
@@ -60,6 +79,9 @@ class Profile(models.Model):
     class Meta:
         verbose_name = "Профиль"
         verbose_name_plural = "Профили"
+
+    def __str__(self):
+        return f'профиль пользователя {self.user.username}'
 
 
 class TaskItem(models.Model):
@@ -77,3 +99,6 @@ class TaskItem(models.Model):
     class Meta:
         verbose_name = "Решение ученика"
         verbose_name_plural = "Решения учеников"
+
+    def __str__(self):
+        return f'решение {self.index} задачи из теста {self.test_id.template_id.name}'
