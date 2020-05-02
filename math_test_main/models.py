@@ -51,7 +51,7 @@ class Set2Test(models.Model):
 
     # если удалить сет с задачами, то шаблоны тоже удалятся?
     # мне кажется, это должно работать не так, поэтому PROTECT
-    set_id = models.ForeignKey('math_test_main.models.SetOfTasks', on_delete=models.PROTECT)
+    set_id = models.ForeignKey('SetOfTasks', on_delete=models.PROTECT)
     index = models.PositiveSmallIntegerField()
 
     class Meta:
