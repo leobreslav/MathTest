@@ -4,7 +4,8 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 
-class Set(models.Model):
+# сет задач
+class SetOfTasks(models.Model):
     name = models.CharField(max_length=50)
 
     class Meta:
@@ -15,11 +16,12 @@ class Set(models.Model):
         return self.name
 
 
-class Task(models.Model):
+# задача
+class Problem(models.Model):
     # условие задачи
     problem = models.TextField()
     answer = models.TextField()
-    set = models.ManyToManyField(Set)
+    set = models.ManyToManyField(SetOfTasks)
 
     class Meta:
         verbose_name = "Задача"
@@ -29,6 +31,7 @@ class Task(models.Model):
         return self.problem[:50]
 
 
+# шаблон теста
 class TestTemplate(models.Model):
     # ссылка на автора теста
     author = models.ForeignKey('Profile', on_delete=models.SET_NULL, null=True)
@@ -42,12 +45,13 @@ class TestTemplate(models.Model):
         return self.name
 
 
+# соответствие сета, шаблона теста и номера задачи в этом тесте
 class Set2Test(models.Model):
     test_id = models.ForeignKey('TestTemplate', on_delete=models.CASCADE)
 
     # если удалить сет с задачами, то шаблоны тоже удалятся?
     # мне кажется, это должно работать не так, поэтому PROTECT
-    set_id = models.ForeignKey('Set', on_delete=models.PROTECT)
+    set_id = models.ForeignKey('math_test_main.models.SetOfTasks', on_delete=models.PROTECT)
     index = models.PositiveSmallIntegerField()
 
     class Meta:
@@ -58,6 +62,7 @@ class Set2Test(models.Model):
         return f'{self.index} задача в {self.test_id}'
 
 
+# экземпляр теста
 class TestItem(models.Model):
     student_id = models.ForeignKey('Profile', on_delete=models.CASCADE)
     template_id = models.ForeignKey('TestTemplate', on_delete=models.CASCADE)
@@ -70,6 +75,7 @@ class TestItem(models.Model):
         return f'тест {self.template_id} для ученика {self.student_id.user.id}'
 
 
+# расширение стандартного django user
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
@@ -84,6 +90,7 @@ class Profile(models.Model):
         return f'профиль пользователя {self.user.username}'
 
 
+# экземпляр решения
 class TaskItem(models.Model):
     test_id = models.ForeignKey('TestItem', on_delete=models.CASCADE)
 
