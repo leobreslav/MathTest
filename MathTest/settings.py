@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 from MathTest.settings_local import DB_CONFIG
 import os
+try:
+	import dj_database_url
+except:
+	pass
 from  MathTest import settings_local as local
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -77,7 +81,8 @@ WSGI_APPLICATION = 'MathTest.wsgi.application'
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
-    "default": local.DB_CONFIG
+    #"default": local.DB_CONFIG
+    "default": dj_database_url.config(), # uncomment it for Heroku
 }
 
 
@@ -117,4 +122,5 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
+STATIC_ROOT = local.STATIC_ROOT
 STATIC_URL = local.STATIC_URL
