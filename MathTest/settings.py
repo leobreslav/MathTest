@@ -81,8 +81,8 @@ WSGI_APPLICATION = 'MathTest.wsgi.application'
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
-    #"default": local.DB_CONFIG
-    "default": dj_database_url.config(), # uncomment it for Heroku
+    "default": local.DB_CONFIG
+    #"default": dj_database_url.config(), # uncomment it for Heroku
 }
 
 
