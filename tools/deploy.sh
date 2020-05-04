@@ -17,5 +17,5 @@ $BIN/pip install -r requirements.txt
 
 $BIN/python manage.py migrate
 $BIN/python manage.py collectstatic
-/etc/init.d/uwsgi restart
-/etc/init.d/nginx restart
+sudo /bin/systemctl restart uwsgi
+sudo /bin/systemctl restart nginx
