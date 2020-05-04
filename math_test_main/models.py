@@ -4,108 +4,128 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 
-# сет задач
-class SetOfTasks(models.Model):
+class ProblemPrototype(models.Model):
     name = models.CharField(max_length=50)
 
     class Meta:
-        verbose_name = "Сет с задачами"
-        verbose_name_plural = "Сеты с задачами"
+        verbose_name = "Problem prototype"
+        verbose_name_plural = "Problem prototypes"
 
     def __str__(self):
         return self.name
 
 
-# задача
-class Problem(models.Model):
-    # условие задачи
+class ProblemHead(models.Model):
     problem = models.TextField()
-    answer = models.TextField()
-    set = models.ManyToManyField(SetOfTasks)
+    prototype = models.ManyToManyField(ProblemPrototype)
 
     class Meta:
-        verbose_name = "Задача"
-        verbose_name_plural = "Задачи"
+        verbose_name = "Problem"
+        verbose_name_plural = "Problems"
 
     def __str__(self):
         return self.problem[:50]
 
 
-# шаблон теста
+class ProblemPoint(models.Model):
+    problem_head = models.ForeignKey('ProblemHead', on_delete=models.CASCADE)
+    answer = models.TextField()
+    num_in_problem = models.IntegerField()
+
+    class Meta:
+        verbose_name = "Problem Point"
+        verbose_name_plural = "Problem points"
+
+    def __str__(self):
+        return f"Point {self.num_in_problem} of {self.problem_head}"
+
+
 class TestTemplate(models.Model):
-    # ссылка на автора теста
+    # link to the author of test
     author = models.ForeignKey('Profile', on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=50)
 
     class Meta:
-        verbose_name = "Шаблон теста"
-        verbose_name_plural = "Шаблоны тестов"
+        verbose_name = "Test template"
+        verbose_name_plural = "Test templates"
 
     def __str__(self):
         return self.name
 
 
-# соответствие сета, шаблона теста и номера задачи в этом тесте
-class Set2Test(models.Model):
+# match between sets and templates
+class Prototype2Test(models.Model):
     test_id = models.ForeignKey('TestTemplate', on_delete=models.CASCADE)
-
-    # если удалить сет с задачами, то шаблоны тоже удалятся?
-    # мне кажется, это должно работать не так, поэтому PROTECT
-    set_id = models.ForeignKey('SetOfTasks', on_delete=models.PROTECT)
+    set_id = models.ForeignKey('ProblemPrototype', on_delete=models.PROTECT)
     index = models.PositiveSmallIntegerField()
 
     class Meta:
-        verbose_name = "тип задач в тесте"
-        verbose_name_plural = "типы задач в тестах"
+        verbose_name = "problem type in test"
+        verbose_name_plural = "problem types in tests"
 
     def __str__(self):
-        return f'{self.index} задача в {self.test_id}'
+        return f'{self.index} problem in {self.test_id}'
 
 
-# экземпляр теста
+# instance of test
 class TestItem(models.Model):
     student_id = models.ForeignKey('Profile', on_delete=models.CASCADE)
     template_id = models.ForeignKey('TestTemplate', on_delete=models.CASCADE)
 
     class Meta:
-        verbose_name = "Экземпляр теста"
-        verbose_name_plural = "Экземпляры тестов"
+        verbose_name = "Test instance"
+        verbose_name_plural = "Test instances"
 
     def __str__(self):
-        return f'тест {self.template_id} для ученика {self.student_id.user.id}'
+        return f'test {self.template_id} for student {self.student_id.user.id}'
 
 
-# расширение стандартного django user
+# extending of default django user
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
-    # поле, показывающее есть ли у пользователя доступ к задачам из базы
+    # field, showing whether the user has access to problem from db
     has_access = models.BooleanField(default=False)
 
     class Meta:
-        verbose_name = "Профиль"
-        verbose_name_plural = "Профили"
+        verbose_name = "Profile"
+        verbose_name_plural = "Profiles"
 
     def __str__(self):
-        return f'профиль пользователя {self.user.username}'
+        return f"{self.user.username}'s profile"
 
 
-# экземпляр решения
-class TaskItem(models.Model):
+# instance of Problem particular student
+class ProblemHeadItem(models.Model):
     test_id = models.ForeignKey('TestItem', on_delete=models.CASCADE)
 
-    # пока просто текст
-    answer = models.TextField()
-    # балл за задачу
-    score = models.SmallIntegerField()
-    # комментарий к задаче
-    comment = models.TextField()
-    # номер задачи в тесте, нужен для правильного отображения ответов на тест.
+    # instance of problem must reference to the problem
+    # otherwise we won't be able to access to the problem, and, for example, get answer on it
+    problem_head_id = models.ForeignKey('ProblemHead', on_delete=models.CASCADE)
+
+    # required for correct displaying test results
     index = models.PositiveSmallIntegerField()
 
     class Meta:
-        verbose_name = "Решение ученика"
-        verbose_name_plural = "Решения учеников"
+        verbose_name = "Problem head item"
+        verbose_name_plural = "Problem head items"
 
     def __str__(self):
-        return f'решение {self.index} задачи из теста {self.test_id.template_id.name}'
+        return f'instance of {self.index} from {self.test_id.template_id.name}'
+
+
+# instance of Problem Item
+class ProblemPointItem(models.Model):
+    problem_item_id = models.ForeignKey('ProblemHeadItem', on_delete=models.CASCADE)
+    answer = models.TextField()
+    score = models.PositiveSmallIntegerField()
+    comment = models.TextField()
+    num_in_problem = models.IntegerField()
+
+    class Meta:
+        verbose_name = "answer on problem's point"
+        verbose_name_plural = "answers on problem's points"
+
+    def __str__(self):
+        return f"answer on {self.num_in_problem} of {self.problem_item_id}"
+
