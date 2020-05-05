@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('index', models.PositiveSmallIntegerField()),
-                ('problem_head_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='math_test_main.ProblemHead')),
+                ('problem_head_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.ProblemHead')),
             ],
             options={
                 'verbose_name': '',
@@ -65,7 +65,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=50)),
-                ('author', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='math_test_main.Profile')),
+                ('author', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='api.Profile')),
             ],
             options={
                 'verbose_name': 'Test template',
@@ -76,8 +76,8 @@ class Migration(migrations.Migration):
             name='TestItem',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('student_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='math_test_main.Profile')),
-                ('template_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='math_test_main.TestTemplate')),
+                ('student_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.Profile')),
+                ('template_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.TestTemplate')),
             ],
             options={
                 'verbose_name': 'Test instance',
@@ -89,8 +89,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('index', models.PositiveSmallIntegerField()),
-                ('set_id', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='math_test_main.ProblemPrototype')),
-                ('test_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='math_test_main.TestTemplate')),
+                ('set_id', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='api.ProblemPrototype')),
+                ('test_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.TestTemplate')),
             ],
             options={
                 'verbose_name': 'problem type in test',
@@ -105,7 +105,7 @@ class Migration(migrations.Migration):
                 ('score', models.PositiveSmallIntegerField()),
                 ('comment', models.TextField()),
                 ('num_in_problem', models.IntegerField()),
-                ('problem_item_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='math_test_main.ProblemHeadItem')),
+                ('problem_item_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.ProblemHeadItem')),
             ],
             options={
                 'verbose_name': "answer on problem's point",
@@ -118,7 +118,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('answer', models.TextField()),
                 ('num_in_problem', models.IntegerField()),
-                ('problem_head', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='math_test_main.ProblemHead')),
+                ('problem_head', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.ProblemHead')),
             ],
             options={
                 'verbose_name': 'Problem Point',
@@ -128,11 +128,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='problemheaditem',
             name='test_id',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='math_test_main.TestItem'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.TestItem'),
         ),
         migrations.AddField(
             model_name='problemhead',
             name='prototype',
-            field=models.ManyToManyField(to='math_test_main.ProblemPrototype'),
+            field=models.ManyToManyField(to='api.ProblemPrototype'),
         ),
     ]
