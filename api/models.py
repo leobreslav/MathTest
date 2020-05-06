@@ -55,8 +55,8 @@ class TestTemplate(models.Model):
 
 # match between sets and templates
 class Prototype2Test(models.Model):
-    test_id = models.ForeignKey('TestTemplate', on_delete=models.CASCADE)
-    set_id = models.ForeignKey('ProblemPrototype', on_delete=models.PROTECT)
+    test = models.ForeignKey('TestTemplate', on_delete=models.CASCADE)
+    set = models.ForeignKey('ProblemPrototype', on_delete=models.PROTECT)
     index = models.PositiveSmallIntegerField()
 
     class Meta:
@@ -64,20 +64,20 @@ class Prototype2Test(models.Model):
         verbose_name_plural = "problem types in tests"
 
     def __str__(self):
-        return f'{self.index} problem in {self.test_id}'
+        return f'{self.index} problem in {self.test}'
 
 
 # instance of test
 class TestItem(models.Model):
-    student_id = models.ForeignKey('Profile', on_delete=models.CASCADE)
-    template_id = models.ForeignKey('TestTemplate', on_delete=models.CASCADE)
+    student = models.ForeignKey('Profile', on_delete=models.CASCADE)
+    template = models.ForeignKey('TestTemplate', on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = "Test instance"
         verbose_name_plural = "Test instances"
 
     def __str__(self):
-        return f'test {self.template_id} for student {self.student_id.user.id}'
+        return f'test {self.template} for student {self.student.user.id}'
 
 
 # extending of default django user
@@ -97,11 +97,11 @@ class Profile(models.Model):
 
 # instance of Problem particular student
 class ProblemHeadItem(models.Model):
-    test_id = models.ForeignKey('TestItem', on_delete=models.CASCADE)
+    test = models.ForeignKey('TestItem', on_delete=models.CASCADE)
 
     # instance of problem must reference to the problem
     # otherwise we won't be able to access to the problem, and, for example, get answer on it
-    problem_head_id = models.ForeignKey('ProblemHead', on_delete=models.CASCADE)
+    problem_head = models.ForeignKey('ProblemHead', on_delete=models.CASCADE)
 
     # required for correct displaying test results
     index = models.PositiveSmallIntegerField()
@@ -111,12 +111,12 @@ class ProblemHeadItem(models.Model):
         verbose_name_plural = "Problem head items"
 
     def __str__(self):
-        return f'instance of {self.index} from {self.test_id.template_id.name}'
+        return f'instance of {self.index} from {self.test.template.name}'
 
 
 # instance of Problem Item
 class ProblemPointItem(models.Model):
-    problem_item_id = models.ForeignKey('ProblemHeadItem', on_delete=models.CASCADE)
+    problem_item = models.ForeignKey('ProblemHeadItem', on_delete=models.CASCADE)
     answer = models.TextField()
     score = models.PositiveSmallIntegerField()
     comment = models.TextField()
@@ -127,5 +127,5 @@ class ProblemPointItem(models.Model):
         verbose_name_plural = "answers on problem's points"
 
     def __str__(self):
-        return f"answer on {self.num_in_problem} of {self.problem_item_id}"
+        return f"answer on {self.num_in_problem} of {self.problem_item}"
 
