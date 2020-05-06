@@ -21,7 +21,7 @@ def generate_test_item(template, student):
 
     for i, prototype in enumerate(prototypes):
         problem_heads = ProblemHead.objects.all(prototype=prototype)
-        problem_head = problem_heads[random.randrange(0, len(problem_heads), 1)]
+        problem_head = random.choice(problem_heads)
 
         head_item = ProblemHeadItem.objects.create(test=test_item, problem_head=problem_head, index=i)
 
