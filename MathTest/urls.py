@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from ser.views import autofill
 
 from MathTest import views
 
@@ -22,6 +23,6 @@ urlpatterns = [
     path('', views.index),
     path('api/', include('api.urls')),
     path('admin/', admin.site.urls),
-    path('problem_prototypes/', views.problem_prototypes)
+    path('problem_prototypes/', views.problem_prototypes),
+    path('autofill/', autofill),
 ]
-
