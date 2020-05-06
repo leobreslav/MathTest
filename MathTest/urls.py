@@ -19,6 +19,7 @@ from django.urls import path, include
 from MathTest import views
 
 urlpatterns = [
+    path('', views.index),
     path('api/', include('api.urls')),
     path('admin/', admin.site.urls),
     path('problem_prototypes/', views.problem_prototypes)
