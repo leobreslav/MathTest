@@ -4,7 +4,7 @@ BIN=/srv/math_test/env/bin
 set -e
 cd /srv/math_test/app/
 
-BRANCH=server_deploy
+BRANCH=master
 
 git fetch -q origin $BRANCH
 git reset -q --hard FETCH_HEAD
