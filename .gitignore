@@ -7,3 +7,4 @@ __pycache__/
 MathTest/settings_local.py
 db.sqlite3
 frontend/build
+frontend/node_modules
