@@ -14,6 +14,9 @@ class ProblemPrototype(models.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def example(self):
+        return self.problemhead_set.first()
 
 class ProblemHead(models.Model):
     problem = models.TextField()
