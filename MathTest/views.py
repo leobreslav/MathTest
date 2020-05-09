@@ -1,9 +1,6 @@
 from django.http import HttpResponseRedirect
-from MathTest.settings import HAS_NGINX
-
+from django.shortcuts import render
 
 
 def index(request):
-    if HAS_NGINX:
-        return HttpResponseRedirect("/react/index.html")
     return render(request, "index.html")

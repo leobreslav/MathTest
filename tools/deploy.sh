@@ -20,8 +20,6 @@ $BIN/python manage.py collectstatic
 
 cd /srv/math_test/app/frontend
 
-export PUBLIC_URL=react
-
 /usr/bin/npm ci
 /usr/bin/npm run build
 cp -fr /srv/math_test/app/frontend/build /srv/math_test/react

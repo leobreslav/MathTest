@@ -20,8 +20,8 @@ from MathTest import views
 from ser.views import autofill
 
 urlpatterns = [
-    path('api', include('api.urls')),
-    path('admin', admin.site.urls),
-    path('autofill', autofill),
-    path('', views.index),
+    path('api/', include('api.urls')),
+    path('api/admin/', admin.site.urls),
+    path('api/autofill/', autofill),
+    re_path(r'^', views.index),
 ]
