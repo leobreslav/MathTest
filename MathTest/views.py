@@ -1,6 +1,9 @@
-from django.shortcuts import render
+from django.http import HttpResponseRedirect
+from MathTest.settings import HAS_NGINX
+
 
 
 def index(request):
-    # return redirect('problem_prototypes/')  # temporary
+    if HAS_NGINX:
+        return HttpResponseRedirect("/react/index.html")
     return render(request, "index.html")

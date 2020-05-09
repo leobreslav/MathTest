@@ -129,6 +129,6 @@ STATIC_URL = local.STATIC_URL
 
 STATIC_ROOT = local.STATIC_ROOT
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "frontend/build/static"),
-]
+STATICFILES_DIRS = local.STATICFILES_DIRS
+
+HAS_NGINX = local.HAS_NGINX

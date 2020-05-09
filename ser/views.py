@@ -2,6 +2,7 @@ from django.shortcuts import render
 from api.models import ProblemPrototype, ProblemHead, ProblemPoint, Profile, Prototype2Test, TestTemplate, TestItem, ProblemHeadItem, ProblemPointItem
 from django.contrib.auth.models import User
 import random
+from django.http import HttpResponse
 # Create your views here.
 
 def autoclear(request):
@@ -14,6 +15,8 @@ def autoclear(request):
     TestItemD = TestItem.objects.all().delete()
     ProblemHeadItemD = ProblemHeadItem.objects.all().delete()
     ProblemPointItemD = ProblemPointItem.objects.all().delete()
+    return HttpResponse()
+
 def autofill(request):
     # User & Profile
     for i in range(1,6):
@@ -61,3 +64,4 @@ def autofill(request):
                     for pp in ProblemPoint.objects.filter(problem_head = ProblemHeadItemNew.problem_head):
                         ProblemPointItemNew = ProblemPointItem.objects.create(problem_item = ProblemHeadItemNew, answer = 'Некоторый ответ',
                         score = random.choice(range(1,4)), comment = 'Некоторый комментарий', num_in_problem = pp.num_in_problem)
+    return HttpResponse()
