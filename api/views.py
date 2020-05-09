@@ -1,9 +1,10 @@
 from django.contrib.auth.models import User
-from django.http import JsonResponse
-from django.views import View
+from django.http import JsonResponse, HttpResponseBadRequest
+
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
-
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from api.models import ProblemPrototype, ProblemHead
 from api.serializers import ProblemPrototypeSerializer, ProblemHeadSerializer, UserSerializer
 
@@ -11,7 +12,7 @@ from api.serializers import ProblemPrototypeSerializer, ProblemHeadSerializer, U
 # Create your views here.
 
 
-class ProblemPrototypes(View):
+class ProblemPrototypes(APIView):
     # for POST requests to work (disables cookie)
     # @csrf_exempt
     # def dispatch(self, request, *args, **kwargs):
@@ -20,15 +21,18 @@ class ProblemPrototypes(View):
     def get(self, request):
         prototypes = ProblemPrototype.objects.all()
         serializer = ProblemPrototypeSerializer(prototypes, many=True)
-        return JsonResponse(serializer.data, safe=False)
+        return Response(serializer.data)
 
     def post(self, request):
-        data = JSONParser().parse(request)
-        serializer = ProblemPrototypeSerializer(data=data)
+        try:
+            data = request.data
+        except KeyError:
+            return HttpResponseBadRequest()
+        serializer = ProblemPrototypeSerializer(data=data, many=True)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
 
 
 def problem_heads(request, id=-1):
