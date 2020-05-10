@@ -20,7 +20,7 @@ $BIN/python manage.py collectstatic
 
 cd /srv/math_test/app/frontend
 
-/usr/bin/npm ci
+/usr/bin/npm install
 /usr/bin/npm run build
 cp -fr /srv/math_test/app/frontend/build /srv/math_test/react
 
