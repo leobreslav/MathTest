@@ -14,7 +14,15 @@ git reset -q --hard FETCH_HEAD
 
 version=`git rev-parse --short HEAD`
 echo $version > /srv/math_test/static/current_version.txt
-mkdir -p /srv/math_test/static/$version/
+
+set +e
+{
+    mkdir /srv/math_test/static/$version/ 2> /dev/null
+} || {
+    rm -rf /srv/math_test/static/$version/ &&
+    mkdir  /srv/math_test/static/$version/
+}
+set -e
 
 $BIN/pip -qq install -r requirements.txt
 
