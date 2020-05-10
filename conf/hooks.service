@@ -4,7 +4,7 @@ Documentation=https://github.com/adnanh/webhook/
 
 [Service]
 User=deployer
-ExecStart=/usr/bin/webhook -nopanic -port 3000 -hooks /srv/math_test/app/conf/hooks.json
+ExecStart=/usr/bin/webhook -hotreload -nopanic -port 3000 -hooks /srv/math_test/app/conf/hooks.json
 
 [Install]
 WantedBy=multi-user.target
