@@ -42,4 +42,4 @@ sudo /bin/systemctl restart nginx
 echo "===============Deploing of commit $version in branch $BRANCH is complite================"
 echo ""
 echo ""
-} > $LOG 2>&1
+} >> $LOG 2>&1
