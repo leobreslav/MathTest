@@ -1,9 +1,10 @@
 #!/bin/bash
 
-echo "Starting deploing"
-
 BIN=/srv/math_test/env/bin
 
+LOG=/srv/math_test/deploy_log.txt
+{
+echo "=============Starting deploing==============="
 set -e
 cd /srv/math_test/app/
 
@@ -38,4 +39,7 @@ cp -fr /srv/math_test/app/frontend/build /srv/math_test/react
 sudo /bin/systemctl restart uwsgi
 sudo /bin/systemctl restart nginx
 
-echo "Deploing of commit $version in branch $BRANCH is complite"
+echo "===============Deploing of commit $version in branch $BRANCH is complite================"
+echo ""
+echo ""
+} > $LOG 2>&1
