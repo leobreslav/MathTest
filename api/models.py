@@ -3,9 +3,12 @@ from django.contrib.auth.models import User
 
 
 # Create your models here.
+from api.logic import rename_file_on_upload
+
 
 class ProblemPrototype(models.Model):
     name = models.CharField(max_length=50)
+    description = models.TextField(blank=True, default='No description yet')
 
     class Meta:
         verbose_name = "Problem prototype"
@@ -132,3 +135,15 @@ class ProblemPointItem(models.Model):
     def __str__(self):
         return f"answer on {self.num_in_problem} of {self.problem_item}"
 
+
+class UserSolutionFile(models.Model):
+    file = models.FileField(upload_to=rename_file_on_upload)
+    task = models.ForeignKey(ProblemPointItem, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "user's solution file"
+        verbose_name_plural = "user's solution files"
+
+    def __str__(self):
+        return f"solution file #{self.id}"
