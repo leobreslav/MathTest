@@ -16,8 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import re_path, include, path
 
+from MathTest import settings
 from MathTest import views
 from ser.views import autofill
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('api/', include('api.urls')),
@@ -25,3 +27,8 @@ urlpatterns = [
     path('api/autofill/', autofill),
     re_path(r'^', views.index),
 ]
+if not settings.HAS_NGINX:
+    urlpatterns = [ 
+        *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
+        *urlpatterns
+    ]
