@@ -1,7 +1,7 @@
 [
     {
       "id": "deploy_math_test",
-      "execute-command": "/srv/math_test/app/tools/deploy.sh >> /srv/math_test/deploy_log.txt 2>> /srv/math_test/deploy_error_log.txt",
+      "execute-command": "/srv/math_test/app/tools/deploy.sh",
       "command-working-directory": "/srv/math_test/app",
       "response-message": "Executing deploy script...",
        "trigger-rule":
