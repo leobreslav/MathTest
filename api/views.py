@@ -66,9 +66,7 @@ def test_templates(request):
         return Response(status=403)
 
     author_id = author.get().id
-    # author_id = request.GET['author_id']
     templates = TestTemplate.objects.filter(author_id=author_id)
     serializer = TemplateSerializer(templates, many=True)
     return Response(serializer.data)
-    # return HttpResponseBadRequest()
 
