@@ -1,22 +1,21 @@
 from django.contrib.auth.models import User
 from django.http import JsonResponse, HttpResponseBadRequest
 
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.parsers import JSONParser
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from api.models import ProblemPrototype, ProblemHead
 from api.serializers import ProblemPrototypeSerializer, ProblemHeadSerializer, UserSerializer
 
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
 
 # Create your views here.
 
 
 class ProblemPrototypes(APIView):
-    # for POST requests to work (disables cookie)
-    # @csrf_exempt
-    # def dispatch(self, request, *args, **kwargs):
-    #     return super(ProblemPrototypes, self).dispatch(request, *args, **kwargs)
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         prototypes = ProblemPrototype.objects.all()
@@ -34,17 +33,21 @@ class ProblemPrototypes(APIView):
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
 
-
+@api_view(["GET"])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def problem_heads(request, id=-1):
     if id != -1:
         heads = ProblemHead.objects.filter(prototype=id)
     else:
         heads = ProblemHead.objects.all()
     serializer = ProblemHeadSerializer(heads, many=True)
-    return JsonResponse(serializer.data, safe=False)
+    return Response(serializer.data)
 
-
+@api_view(["GET"])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def users(request):
     data = User.objects.all()
     serializer = UserSerializer(data, many=True)
-    return JsonResponse(serializer.data, safe=False)
+    return Response(serializer.data)
