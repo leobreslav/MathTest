@@ -63,12 +63,12 @@ def test_templates(request):
     author = Profile.objects.filter(user_id=user_id)
 
     if len(author) == 0 or not author.get().has_access:
-        return HttpResponse(status=403)
+        return Response(status=403)
 
     author_id = author.get().id
     # author_id = request.GET['author_id']
     templates = TestTemplate.objects.filter(author_id=author_id)
     serializer = TemplateSerializer(templates, many=True)
-    return JsonResponse(serializer.data, safe=False)
+    return Response(serializer.data)
     # return HttpResponseBadRequest()
 
