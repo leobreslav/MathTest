@@ -1,9 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
-
-
-# Create your models here.
-from api.logic import rename_file_on_upload
+import string, random
+from datetime import datetime
 
 
 class ProblemPrototype(models.Model):
@@ -135,6 +133,13 @@ class ProblemPointItem(models.Model):
     def __str__(self):
         return f"answer on {self.num_in_problem} of {self.problem_item}"
 
+
+def rename_file_on_upload(instance, filename):
+        letters = string.ascii_lowercase
+        random_name = ''.join(random.choice(letters) for i in range(10))
+        new_filename = "media/UserSolutionFile/"+datetime.today().strftime('%Y/%m/%d/') + random_name
+        ext = filename.split('.')[-1]
+        return '{}.{}'.format(new_filename, ext)
 
 class UserSolutionFile(models.Model):
     file = models.FileField(upload_to=rename_file_on_upload)

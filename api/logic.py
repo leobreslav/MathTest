@@ -2,8 +2,8 @@ from random import random
 import string
 from datetime import datetime
 
-from .models import *
-from .exceptions import NotAllowedException
+from api.models import *
+from api.exceptions import NotAllowedException
 
 
 def generate_test_template(author, name, *task_prototypes):
@@ -32,9 +32,3 @@ def generate_test_item(template, student):
             ProblemPointItem.objects.create(problem_item=head_item, num_in_problem=j)
 
 
-def rename_file_on_upload(instance, filename):
-    letters = string.ascii_lowercase
-    random_name = ''.join(random.choice(letters) for i in range(10))
-    new_filename = "media/UserSolutionFile/"+datetime.today().strftime('%Y/%m/%d/') + random_name
-    ext = filename.split('.')[-1]
-    return '{}.{}'.format(new_filename, ext)
