@@ -122,7 +122,7 @@ class ProblemHeadItem(models.Model):
 class ProblemPointItem(models.Model):
     problem_item = models.ForeignKey('ProblemHeadItem', on_delete=models.CASCADE)
     answer = models.TextField()
-    score = models.PositiveSmallIntegerField()
+    score = models.PositiveSmallIntegerField(default=0)
     comment = models.TextField()
     num_in_problem = models.IntegerField()
 

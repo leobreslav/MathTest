@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from api.models import ProblemPrototype, ProblemHead, ProblemPoint, TestTemplate
+from api.models import *
 
 
 class ProblemPointSerializer(serializers.ModelSerializer):
@@ -43,3 +43,23 @@ class TemplateSerializer(serializers.ModelSerializer):
     class Meta:
         model = TestTemplate
         fields = ['id', 'author', 'name']
+
+class ProblemPointItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProblemPointItem
+        fields = ['id', 'answer', 'score', 'comment', 'num_in_problem']
+    
+
+class ProblemItemSerializer(serializers.ModelSerializer):
+    problempointitem_set = ProblemPointItemSerializer(many=True)
+    problem_head = ProblemSerializer()
+    class Meta:
+        model = ProblemHeadItem
+        fields = ['id', 'problem_head', 'index', 'problempointitem_set']
+
+
+class TestItemSerializer(serializers.ModelSerializer):
+    problemheaditem_set = ProblemItemSerializer(many=True)
+    class Meta:
+        model = TestItem
+        fields = ['id', 'student', 'problemheaditem_set']

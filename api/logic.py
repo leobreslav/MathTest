@@ -19,16 +19,17 @@ def generate_test_template(author, name, *task_prototypes):
 def generate_test_item(template, student):
     test_item = TestItem.objects.create(template=template, student=student)
 
-    prototypes = Prototype2Test.objects.filter(test=template).order_by('index')
+    prototypes = map(lambda x: x.set, Prototype2Test.objects.filter(test=template).order_by('index'))
 
     for i, prototype in enumerate(prototypes):
-        problem_heads = ProblemHead.objects.all(prototype=prototype)
+        problem_heads = ProblemHead.objects.filter(prototype=prototype)
         problem_head = random.choice(problem_heads)
 
         head_item = ProblemHeadItem.objects.create(test=test_item, problem_head=problem_head, index=i)
 
         points = ProblemPoint.objects.filter(problem_head=problem_head)
-        for j in range(points):
-            ProblemPointItem.objects.create(problem_item=head_item, num_in_problem=j)
+        for point in points:
+            ProblemPointItem.objects.create(problem_item=head_item, num_in_problem=point.num_in_problem)
+    return test_item
 
 

@@ -1,6 +1,6 @@
 from django.urls import path
 
-from api.views import ProblemPrototypes, problem_heads, users, create_template, problem_head_by_prototype, test_templates
+from api.views import ProblemPrototypes, problem_heads, users, create_template, problem_head_by_prototype, test_templates, test_item
 
 urlpatterns = [
     path('problem_prototypes', ProblemPrototypes.as_view()),
@@ -8,5 +8,6 @@ urlpatterns = [
     path('problem_heads', problem_heads),
     path('users', users),
     path('create_test_template', create_template),
-    path('templates', test_templates)
+    path('templates', test_templates),
+    path('test_item', test_item)
 ]

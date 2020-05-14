@@ -85,6 +85,8 @@ def requires_params(field:str, params:dict, request_pos:Arg=0):
                 return Response(status=400)
             wrap_args = {}
             getter = getattr(data, "get", None)
+            if getter:
+                getter = data
             if not getter:
                 getter = getattr(data, "__dict__", None)
             if getter is None:

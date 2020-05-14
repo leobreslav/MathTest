@@ -5,17 +5,17 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from api.models import ProblemPrototype, ProblemHead, TestTemplate
+from api.models import ProblemPrototype, ProblemHead, TestItem, TestTemplate
 from api.serializers import ProblemPrototypeSerializer, ProblemHeadSerializer, UserSerializer
 
 from api.models import ProblemPrototype, ProblemHead, TestTemplate, Profile
-from api.serializers import ProblemPrototypeSerializer, ProblemHeadSerializer, UserSerializer, TemplateSerializer
+from api.serializers import ProblemPrototypeSerializer, ProblemHeadSerializer, UserSerializer, TemplateSerializer, TestItemSerializer
 
 
 from functools import partial
 
 from api.decorators import get_model, name_arg, requires_params, check, name_arg
-from api.logic import generate_test_template
+from api.logic import generate_test_item, generate_test_template
 
 
 class TokenAuthSupportCookie(TokenAuthentication):
@@ -108,4 +108,29 @@ def create_template(request, task_prototypes, name):
 def test_templates(request, templates):
     serializer = TemplateSerializer(templates, many=True)
     return Response(serializer.data)
+
+@api_view(["GET"])
+@authentication_classes([TokenAuthSupportCookie])
+@permission_classes([IsAuthenticated])
+@requires_params(
+    "GET",
+    {
+        "test_template": int
+    }
+)
+@requires_params(
+    "user",
+    {
+        "id": int
+    }
+)
+@get_model(Profile, "id", field="user_id", new_name="profile")
+@get_model(TestTemplate, "test_template")
+def test_item(request, profile, test_template):
+    test_item = generate_test_item(test_template, profile)
+    serializer = TestItemSerializer(test_item)
+    return Response(serializer.data)
+
+
+
 
