@@ -87,6 +87,8 @@ def requires_params(field:str, params:dict, request_pos:Arg=0):
             getter = getattr(data, "get", None)
             if not getter:
                 getter = getattr(data, "__dict__", None)
+            else:
+                getter = data
             if getter is None:
                 return Response(status=400)
             for arg, mapping in params.items():
