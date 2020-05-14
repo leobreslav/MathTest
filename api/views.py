@@ -14,7 +14,7 @@ from api.serializers import ProblemPrototypeSerializer, ProblemHeadSerializer, U
 
 from functools import partial
 
-from api.decorators import get_model, requires_params
+from api.decorators import get_model, name_arg, requires_params, check, name_arg
 from api.logic import generate_test_template
 
 
@@ -96,17 +96,16 @@ def create_template(request, task_prototypes, name):
     return Response(status=201)
 
 @api_view(["GET"])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([TokenAuthSupportCookie])
 @permission_classes([IsAuthenticated])
-def test_templates(request):
-    user_id = request.user.id
-    author = Profile.objects.filter(user_id=user_id)
-
-    if len(author) == 0 or not author.get().has_access:
-        return Response(status=403)
-
-    author_id = author.get().id
-    templates = TestTemplate.objects.filter(author_id=author_id)
+@requires_params(
+    "user",
+    {"id": int}
+)
+@get_model(Profile, "id", field="user_id", new_name="profile")
+@check("profile", lambda user: user.has_access, Response(status=403))
+@get_model(TestTemplate, "profile", fun="filter", field="author_id", new_name="templates")
+def test_templates(request, templates):
     serializer = TemplateSerializer(templates, many=True)
     return Response(serializer.data)
 
