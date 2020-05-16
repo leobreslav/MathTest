@@ -6,8 +6,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from api.models import ProblemPrototype, ProblemHead, TestTemplate, Profile
-from api.serializers import ProblemPrototypeSerializer, ProblemHeadSerializer, UserSerializer, TemplateSerializer
+from api.logic import generate_test_item
+from api.models import ProblemPrototype, ProblemHead, TestTemplate, Profile, ProblemHeadItem
+from api.serializers import ProblemPrototypeSerializer, ProblemHeadSerializer, UserSerializer, TemplateSerializer, \
+    ProblemHeadItemSerializer
 
 
 # Create your views here.
@@ -70,3 +72,24 @@ def test_templates(request):
     serializer = TemplateSerializer(templates, many=True)
     return Response(serializer.data)
 
+
+@api_view(["GET"])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def get_test(request):
+    user_id = request.user.id
+    student = Profile.objects.filter(user_id=user_id)
+
+    if len(student) == 0:
+        return Response(status=403)
+    if 'template_id' not in request.GET:
+        return Response(status=400)
+
+    student = student.get()
+    template_id = request.GET['template_id']
+    template = TestTemplate.objects.get(id=template_id)
+
+    test_item = generate_test_item(template, student)
+    head_items = ProblemHeadItem.objects.filter(test=test_item)
+    serializer = ProblemHeadItemSerializer(head_items, many=True)
+    return Response(serializer.data)

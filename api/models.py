@@ -1,9 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+import string
+import random
+from datetime import datetime
+
 
 # Create your models here.
-from api.logic import rename_file_on_upload
 
 
 class ProblemPrototype(models.Model):
@@ -20,6 +23,7 @@ class ProblemPrototype(models.Model):
     @property
     def example(self):
         return self.problemhead_set.first()
+
 
 class ProblemHead(models.Model):
     problem = models.TextField()
@@ -119,12 +123,16 @@ class ProblemHeadItem(models.Model):
     def __str__(self):
         return f'instance of {self.index} from {self.test.template.name}'
 
+    @property
+    def points(self):
+        return self.problempointitem_set.all()
+
 
 # instance of Problem Item
 class ProblemPointItem(models.Model):
     problem_item = models.ForeignKey('ProblemHeadItem', on_delete=models.CASCADE)
     answer = models.TextField()
-    score = models.PositiveSmallIntegerField()
+    score = models.PositiveSmallIntegerField(null=True)
     comment = models.TextField()
     num_in_problem = models.IntegerField()
 
@@ -134,6 +142,14 @@ class ProblemPointItem(models.Model):
 
     def __str__(self):
         return f"answer on {self.num_in_problem} of {self.problem_item}"
+
+
+def rename_file_on_upload(filename):
+    letters = string.ascii_lowercase
+    random_name = ''.join(random.choice(letters) for i in range(10))
+    new_filename = "media/UserSolutionFile/" + datetime.today().strftime('%Y/%m/%d/') + random_name
+    ext = filename.split('.')[-1]
+    return '{}.{}'.format(new_filename, ext)
 
 
 class UserSolutionFile(models.Model):
