@@ -1,15 +1,19 @@
 import React from 'react';
-class Users extends React.Component {
+import Task from "./Task";
+//import state from "../state";
+
+class Set extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             data: [],
-            isLoading: false,
+            key: props.key
         }
     }
     componentDidMount() {
         const xhr = new XMLHttpRequest();
-        xhr.open('GET', '/api/users', true);
+        xhr.open('GET', '/api/problem_prototypes', true);
+        xhr.setRequestHeader("Authorization", `Token ${this.state.key}`);
         xhr.send();
         this.setState({ isLoading: true });
 
@@ -36,11 +40,13 @@ class Users extends React.Component {
         } else {
             return data.map(item => {
                 return (
-                    <li>{item.username}</li>
+                    <li><div>{item.name}</div><ul><Task id = {item.id}/></ul></li>
                 );
             })
         }
     }
+
+
     render() {
         return (
             <div className='App'>
@@ -52,4 +58,4 @@ class Users extends React.Component {
     }
 }
 
-export default Users;
+export default Set;

@@ -1,20 +1,19 @@
 import React from 'react';
+import state from "../state";
 
-class Task extends React.Component {
+class Users extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             data: [],
-            id: props.id,
-            isLoading: false,
         }
     }
-
     componentDidMount() {
         const xhr = new XMLHttpRequest();
-        xhr.open('GET', `/api/problem_heads/${this.state.id}`, true);
+        xhr.open('GET', '/api/users', true);
+        xhr.setRequestHeader("Authorization", `Token ${state.key}`);
         xhr.send();
-        this.setState({isLoading: true});
+        this.setState({ isLoading: true });
 
         xhr.onreadystatechange = () => {
             if (xhr.readyState !== 4) {
@@ -32,18 +31,18 @@ class Task extends React.Component {
             }
         }
     }
-
     renderProducts() {
-        const {data, isLoading} = this.state;
+        const { data, isLoading } = this.state;
         if (isLoading) {
             return <div> Загрузка!!!!</div>
         } else {
             return data.map(item => {
-                return <li key={item} > {(item.problem.length > 20? item.problem.substring(0, 19) + "..." : item.problem)}</li>
+                return (
+                    <li>{item.username}</li>
+                );
             })
         }
     }
-
     render() {
         return (
             <div className='App'>
@@ -55,4 +54,4 @@ class Task extends React.Component {
     }
 }
 
-export default Task;
+export default Users;

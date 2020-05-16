@@ -1,18 +1,21 @@
 import React from 'react';
-import Task from "./Task";
-class Set extends React.Component {
+import state from "../state";
+
+class Task extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             data: [],
-            isLoading: false,
+            id: props.id,
         }
     }
+
     componentDidMount() {
         const xhr = new XMLHttpRequest();
-        xhr.open('GET', '/api/problem_prototypes', true);
+        xhr.open('GET', `/api/problem_heads/${this.state.id}`, true);
+        xhr.setRequestHeader("Authorization", `Token ${state.key}`);
         xhr.send();
-        this.setState({ isLoading: true });
+        this.setState({isLoading: true});
 
         xhr.onreadystatechange = () => {
             if (xhr.readyState !== 4) {
@@ -30,18 +33,18 @@ class Set extends React.Component {
             }
         }
     }
+
     renderProducts() {
-        const { data, isLoading } = this.state;
+        const {data, isLoading} = this.state;
         if (isLoading) {
             return <div> Загрузка!!!!</div>
         } else {
             return data.map(item => {
-                return (
-                    <li><div>{item.name}</div><ul><Task id = {item.id}/></ul></li>
-                );
+                return <li key={item} > {(item.problem.length - 20 > 3? item.problem.substring(0, 19) + "..." : item.problem)}</li>
             })
         }
     }
+
     render() {
         return (
             <div className='App'>
@@ -53,4 +56,4 @@ class Set extends React.Component {
     }
 }
 
-export default Set;
+export default Task;
