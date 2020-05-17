@@ -24,7 +24,5 @@ class TestGetTest(APITestCase):
 
         request = c.get('/api/get_test?template_id=1')
         self.assertEquals(request.status_code, 200)
-        print('/api/get_test?template_id=1: ' +
-              str(c.get('/api/get_test?template_id=1').data))
 
         self.assertEquals(request.data[0]['problem_head']['problem'], 'test problem definition')
