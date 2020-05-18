@@ -1,6 +1,6 @@
 from functools import partial
 from django.contrib.auth.models import User
-from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse
+from django.http import HttpResponseBadRequest
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -75,7 +75,6 @@ def test_templates(request):
     return Response(serializer.data)
 
 
-<<<<<<< HEAD
 @api_view(["POST"])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
@@ -83,13 +82,14 @@ def test_templates(request):
 def generate_template(request):
     name, prototypes = get_data(request, "data", {
         "name": str,
-        "prototypes_id": partial(get_model, model=ProblemPrototype, many=True)
+        "prototype_ids": partial(get_model, ProblemPrototype, many=True)
     })
     author = request.user.profile
 
     generate_test_template(author, name, *prototypes)
     return Response(status=201)
-=======
+
+
 @api_view(["GET"])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
@@ -110,4 +110,3 @@ def get_test(request):
     head_items = ProblemHeadItem.objects.filter(test=test_item)
     serializer = ProblemItemSerializer(head_items, many=True)
     return Response(serializer.data)
->>>>>>> 0cd1162dfefbbe856446299461280b7e2bb960fc

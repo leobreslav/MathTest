@@ -6,9 +6,9 @@ def catch_errors(f):
         try:
             return f(*args, **kwargs)
         except NotAllowedException as e:
-            return Response(e.args[0], status=403)
+            return Response(e.args, status=403)
         except BadRequestException as e:
-            return Response(e.args[0], status=400)
+            return Response(e.args, status=400)
     return wrapper
         
 

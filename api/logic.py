@@ -6,6 +6,10 @@ from typing import Union, List
 
 
 def generate_test_template(author, name, *task_prototypes):
+
+    if len(task_prototypes) == 0:
+        raise BadRequestException("Can't create template without prototypes")
+
     if not author.has_access:
         raise NotAllowedException("Author can't create test_template")
     
@@ -13,7 +17,6 @@ def generate_test_template(author, name, *task_prototypes):
 
     for count, prototype in enumerate(task_prototypes):
         Prototype2Test.objects.create(test=template, set=prototype, index=count)
-    
 
 
 def generate_test_item(template, student):
@@ -43,30 +46,29 @@ def rename_file_on_upload(instance, filename):
     ext = filename.split('.')[-1]
     return '{}.{}'.format(new_filename, ext)
 
-def get_data(request, name:str, args:dict):
-    data = getattr(request, name, None)
+def get_data(request, dict_name:str, args:dict):
+    data = getattr(request, dict_name, None)
     ret = []
     if data is None:
-        raise BadRequestException
+        raise BadRequestException("Wrong request type")
     for name, mapping in args.items():
         arg = data.get(name, None)
         if arg is None:
-            raise BadRequestException
+            raise BadRequestException(f"Request do not have {name} in {dict_name}")
         ret.append(mapping(arg))
     return tuple(ret)
 
 
-def get_model(model:models.Model, id:Union[int, List[int]], many:bool=False):
+def get_model(model:models.Model, ids:Union[int, List[int]], many:bool=False):
     if not many:
-        mod = model.objects.filter(id=id)
+        mod = model.objects.filter(id=ids)
         if len(mod) == 0:
-            raise BadRequestException
+            raise BadRequestException(f"Wrong id of model")
         return mod[0]
     ret = []
-    for id_one in id:
-        mod = model.objects.filter(id=id_one)
+    for id in ids:
+        mod = model.objects.filter(id=id)
         if len(mod) == 0:
-            raise BadRequestException
-        ret.append[mod[0]]
+            raise BadRequestException(f"Wrong id of model")
+        ret.append(mod[0])
     return ret
-    
