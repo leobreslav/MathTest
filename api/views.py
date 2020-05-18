@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from api.logic import generate_test_item
 from api.models import ProblemPrototype, ProblemHead, TestTemplate, Profile, ProblemHeadItem
 from api.serializers import ProblemPrototypeSerializer, ProblemHeadSerializer, UserSerializer, TemplateSerializer, \
-    ProblemHeadItemSerializer
+    ProblemItemSerializer
 
 
 # Create your views here.
@@ -91,5 +91,5 @@ def get_test(request):
 
     test_item = generate_test_item(template, student)
     head_items = ProblemHeadItem.objects.filter(test=test_item)
-    serializer = ProblemHeadItemSerializer(head_items, many=True)
+    serializer = ProblemItemSerializer(head_items, many=True)
     return Response(serializer.data)

@@ -132,9 +132,10 @@ class ProblemHeadItem(models.Model):
 class ProblemPointItem(models.Model):
     problem_item = models.ForeignKey('ProblemHeadItem', on_delete=models.CASCADE)
     answer = models.TextField()
-    score = models.PositiveSmallIntegerField(null=True)
+    score = models.PositiveSmallIntegerField()
     comment = models.TextField()
     num_in_problem = models.IntegerField()
+    is_answered = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = "answer on problem's point"

@@ -52,7 +52,7 @@ class ProblemPointItemSerializer(serializers.ModelSerializer):
         fields = ['id', 'answer', 'score', 'comment', 'num_in_problem']
 
 
-class ProblemHeadItemSerializer(serializers.ModelSerializer):
+class ProblemItemSerializer(serializers.ModelSerializer):
     problem_head = ProblemHeadSerializer()
     points = ProblemPointItemSerializer(many=True)
 

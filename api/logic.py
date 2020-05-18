@@ -31,7 +31,7 @@ def generate_test_item(template, student):
         head_item = ProblemHeadItem.objects.create(test=test_item, problem_head=problem_head, index=i)
 
         points = ProblemPoint.objects.filter(problem_head=problem_head)
-        for j in range(len(points)):
-            ProblemPointItem.objects.create(problem_item=head_item, num_in_problem=j)
+        for point in points:
+            ProblemPointItem.objects.create(problem_item=head_item, num_in_problem=point.num_in_problem)
 
     return test_item
