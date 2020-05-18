@@ -1,11 +1,95 @@
-from api.views import problem_heads
 from api.logic import generate_test_template
 from django.test import TestCase
+from .logic import get_data, get_model
+from .exceptions import BadRequestException
+from rest_framework.test import APIClient, APITestCase
 from .models import *
 from .exceptions import NotAllowedException
-
 from django.contrib.auth.models import User
 from rest_framework.test import APIClient, APITestCase
+
+class TestGetData(TestCase):
+    class FakeRequest:
+        pass
+
+    def setUp(self):
+        
+        self.request = self.FakeRequest()
+        self.request.data = {
+            "int": "1",
+            "float": "1.0034",
+            "string": "akfvak",
+            "arr_int": ["1", "2", "3"]
+        }
+
+    
+    def testSmoke(self):
+        self.assertEqual(
+            get_data(
+                self.request,
+                "data",
+                {
+                    "int": int,
+                    "float": float,
+                    "arr_int": lambda x: list(map(int,x))
+                }
+            ),
+            (1, 1.0034, [1, 2, 3])
+        )
+
+    def testNotData(self):
+        with self.assertRaises(BadRequestException):
+            get_data(self.request, "not_data", {})
+    
+    def testBadData(self):
+        with self.assertRaises(BadRequestException):
+            get_data(self.request, "data", {"arg": str})
+
+class TestGetModel(TestCase):
+    def setUp(self):
+        self.model = ProblemPrototype
+        self.testing_model = self.model.objects.create(name="test")
+        self.testing_models = [self.model.objects.create(name=f"{i}") for i in range(5)]
+        self.ids = list(map(lambda x: x.id, self.testing_models))
+        self.id = self.testing_model.id
+    
+    def testSmoke(self):
+        model = get_model(self.model, self.id)
+        self.assertEqual(model, self.testing_model)
+    
+    def testMany(self):
+        models = get_model(self.model, self.ids, many=True)
+        self.assertEqual(len(models), len(self.testing_models))
+        for model in models:
+            self.assertIn(model, self.testing_models)
+
+    def testBadData(self):
+        with self.assertRaises(BadRequestException):
+            get_model(self.model, 15000000)
+        
+    def testManyBadData(self):
+        with self.assertRaises(BadRequestException):
+            get_model(self.model, [15000000, 150000001], many=True)
+
+
+class TestGenerateTemplateView(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create(username='test', password='test')
+        self.profile = Profile.objects.create(user=self.user, has_access=True)
+        self.prototypes = [ProblemPrototype.objects.create(name=f"{i}") for i in range(10)]
+        self.prototype_ids = list(map(lambda x: x.id, self.prototypes))
+    
+    def testSmoke(self):
+        client = APIClient()
+        client.force_authenticate(self.user)
+        post_data = {
+            "name": "test",
+            "prototype_ids": self.prototype_ids[:3]
+        }
+        r = client.post("/api/generate_template", data=post_data)
+        self.assertEqual(r.status_code, 201)
+        
+
 
 class TestGenerateTestTemplate(TestCase):
     def setUp(self):
@@ -27,11 +111,16 @@ class TestGenerateTestTemplate(TestCase):
             p2t = Prototype2Test.objects.filter(test=template, set=prototype, index=count)
             self.assertEqual(len(p2t), 1)
     
-    def testError(self):
+    def testAccess(self):
         self.author.has_access = False
         self.author.save()
         with self.assertRaises(NotAllowedException):
             generate_test_template(self.author, "test", *self.prototypes[:3])
+    
+    def testWithoutPrototypes(self):
+        with self.assertRaises(BadRequestException):
+            generate_test_template(self.author, "test", *[])
+
 
 
 class TestGetTest(APITestCase):
@@ -55,3 +144,4 @@ class TestGetTest(APITestCase):
 
         self.assertEquals(request.data[0]['problem_head']['problem'], 'test problem definition')
 
+        
