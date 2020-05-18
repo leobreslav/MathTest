@@ -1,3 +1,4 @@
+from functools import partial
 from django.contrib.auth.models import User
 from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse
 from rest_framework.authentication import TokenAuthentication
@@ -9,7 +10,8 @@ from rest_framework.views import APIView
 from api.models import ProblemPrototype, ProblemHead, TestTemplate, Profile
 from api.serializers import ProblemPrototypeSerializer, ProblemHeadSerializer, UserSerializer, TemplateSerializer
 
-
+from .decorators import catch_errors
+from .logic import get_data, get_model, generate_test_template
 # Create your views here.
 
 
@@ -70,3 +72,17 @@ def test_templates(request):
     serializer = TemplateSerializer(templates, many=True)
     return Response(serializer.data)
 
+
+@api_view(["POST"])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+@catch_errors
+def generate_template(request):
+    name, prototypes = get_data(request, "data", {
+        "name": str,
+        "prototypes_id": partial(get_model, model=ProblemPrototype, many=True)
+    })
+    author = request.user.profile
+
+    generate_test_template(author, name, *prototypes)
+    return Response(status=201)
