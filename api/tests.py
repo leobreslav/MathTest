@@ -9,12 +9,12 @@ from django.contrib.auth.models import User
 from rest_framework.test import APIClient, APITestCase
 
 class TestGetData(TestCase):
-    class FackeRequest:
+    class FakeRequest:
         pass
 
     def setUp(self):
         
-        self.request = self.FackeRequest()
+        self.request = self.FakeRequest()
         self.request.data = {
             "int": "1",
             "float": "1.0034",
