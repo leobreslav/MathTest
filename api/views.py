@@ -7,8 +7,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from api.models import ProblemPrototype, ProblemHead, TestTemplate, Profile
-from api.serializers import ProblemPrototypeSerializer, ProblemHeadSerializer, UserSerializer, TemplateSerializer
+from api.logic import generate_test_item
+from api.models import ProblemPrototype, ProblemHead, TestTemplate, Profile, ProblemHeadItem
+from api.serializers import ProblemPrototypeSerializer, ProblemHeadSerializer, UserSerializer, TemplateSerializer, \
+    ProblemItemSerializer
 
 from .decorators import catch_errors
 from .logic import get_data, get_model, generate_test_template
@@ -73,6 +75,7 @@ def test_templates(request):
     return Response(serializer.data)
 
 
+<<<<<<< HEAD
 @api_view(["POST"])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
@@ -86,3 +89,25 @@ def generate_template(request):
 
     generate_test_template(author, name, *prototypes)
     return Response(status=201)
+=======
+@api_view(["GET"])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def get_test(request):
+    user_id = request.user.id
+    student = Profile.objects.filter(user_id=user_id)
+
+    if len(student) == 0:
+        return Response(status=403)
+    if 'template_id' not in request.GET:
+        return Response(status=400)
+
+    student = student.get()
+    template_id = request.GET['template_id']
+    template = TestTemplate.objects.get(id=template_id)
+
+    test_item = generate_test_item(template, student)
+    head_items = ProblemHeadItem.objects.filter(test=test_item)
+    serializer = ProblemItemSerializer(head_items, many=True)
+    return Response(serializer.data)
+>>>>>>> 0cd1162dfefbbe856446299461280b7e2bb960fc

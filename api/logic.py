@@ -1,10 +1,9 @@
 import random
-import string
-from datetime import datetime
 
 from .models import *
 from .exceptions import BadRequestException, NotAllowedException
 from typing import Union, List
+
 
 def generate_test_template(author, name, *task_prototypes):
     if not author.has_access:
@@ -23,15 +22,19 @@ def generate_test_item(template, student):
     prototypes = Prototype2Test.objects.filter(test=template).order_by('index')
 
     for i, prototype in enumerate(prototypes):
-        problem_heads = ProblemHead.objects.all(prototype=prototype)
+        problem_heads = ProblemHead.objects.filter(prototype=prototype.set)
+
+        if len(problem_heads) == 0:
+            raise NotAllowedException('Cannot create a test from a template with empty prototypes')
+
         problem_head = random.choice(problem_heads)
 
         head_item = ProblemHeadItem.objects.create(test=test_item, problem_head=problem_head, index=i)
 
         points = ProblemPoint.objects.filter(problem_head=problem_head)
-        for j in range(points):
-            ProblemPointItem.objects.create(problem_item=head_item, num_in_problem=j)
-
+        for point in points:
+            ProblemPointItem.objects.create(problem_item=head_item, num_in_problem=point.num_in_problem)
+    return test_item
 
 def rename_file_on_upload(instance, filename):
     letters = string.ascii_lowercase
@@ -66,3 +69,4 @@ def get_model(model:models.Model, id:Union[int, List[int]], many:bool=False):
             raise BadRequestException
         ret.append[mod[0]]
     return ret
+    
