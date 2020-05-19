@@ -45,6 +45,20 @@ class TestGetData(TestCase):
         with self.assertRaises(BadRequestException):
             get_data(self.request, "data", {"arg": str})
 
+    def testNone(self):
+        self.assertEqual(
+            get_data(
+                self.request,
+                "data",
+                {
+                    "int": None,
+                    "float": float,
+                    "arr_int": None
+                }
+            ),
+            ("1", 1.0034, ["1", "2", "3"])
+        )
+
 class TestGetModel(TestCase):
     def setUp(self):
         self.model = ProblemPrototype
@@ -143,5 +157,3 @@ class TestGetTest(APITestCase):
         self.assertEquals(request.status_code, 200)
 
         self.assertEquals(request.data[0]['problem_head']['problem'], 'test problem definition')
-
-        

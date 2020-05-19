@@ -49,7 +49,7 @@ class TemplateSerializer(serializers.ModelSerializer):
 class ProblemPointItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProblemPointItem
-        fields = ['id', 'answer', 'score', 'comment', 'num_in_problem']
+        fields = ['id', 'answer', 'score', 'comment', 'num_in_problem', 'is_answered']
 
 
 class ProblemItemSerializer(serializers.ModelSerializer):

@@ -131,9 +131,9 @@ class ProblemHeadItem(models.Model):
 # instance of Problem Item
 class ProblemPointItem(models.Model):
     problem_item = models.ForeignKey('ProblemHeadItem', on_delete=models.CASCADE)
-    answer = models.TextField()
+    answer = models.TextField(default="")
     score = models.PositiveSmallIntegerField(default=0)
-    comment = models.TextField()
+    comment = models.TextField(default="")
     num_in_problem = models.IntegerField()
     is_answered = models.BooleanField(default=False)
 
