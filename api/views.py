@@ -17,8 +17,21 @@ from .logic import get_data, get_model, generate_test_template
 # Create your views here.
 
 
+class TokenAuthSupportCookie(TokenAuthentication):
+    """
+    Extend the TokenAuthentication class to support cookie based authentication
+    """
+
+    def authenticate(self, request):
+        if 'auth_token' in request.COOKIES and \
+                        'HTTP_AUTHORIZATION' not in request.META:
+            return self.authenticate_credentials(
+                request.COOKIES.get('auth_token')
+            )
+        return super().authenticate(request)
+
 class ProblemPrototypes(APIView):
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthSupportCookie]
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -39,7 +52,7 @@ class ProblemPrototypes(APIView):
 
 
 @api_view(["GET"])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([TokenAuthSupportCookie])
 @permission_classes([IsAuthenticated])
 def problem_heads(request, id=-1):
     if id != -1:
@@ -51,7 +64,7 @@ def problem_heads(request, id=-1):
 
 
 @api_view(["GET"])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([TokenAuthSupportCookie])
 @permission_classes([IsAuthenticated])
 def users(request):
     data = User.objects.all()
@@ -60,7 +73,7 @@ def users(request):
 
 
 @api_view(["GET"])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([TokenAuthSupportCookie])
 @permission_classes([IsAuthenticated])
 def test_templates(request):
     user_id = request.user.id
@@ -76,7 +89,7 @@ def test_templates(request):
 
 
 @api_view(["POST"])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([TokenAuthSupportCookie])
 @permission_classes([IsAuthenticated])
 @catch_errors
 def generate_template(request):
@@ -91,7 +104,7 @@ def generate_template(request):
 
 
 @api_view(["GET"])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([TokenAuthSupportCookie])
 @permission_classes([IsAuthenticated])
 def get_test(request):
     user_id = request.user.id
