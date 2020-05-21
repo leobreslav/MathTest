@@ -8,8 +8,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from api.logic import generate_test_item
-from api.models import ProblemPrototype, ProblemHead, TestTemplate, Profile, ProblemHeadItem
-from api.serializers import ProblemPrototypeSerializer, ProblemHeadSerializer, UserSerializer, TemplateSerializer, \
+from api.models import ProblemPrototype, ProblemHead, TestTemplate, Profile, ProblemHeadItem, ProblemPointItem
+from api.serializers import ProblemPrototypeSerializer, ProblemHeadSerializer, ProblemPointItemSerializer, UserSerializer, TemplateSerializer, \
     ProblemItemSerializer
 
 from .decorators import catch_errors
@@ -123,3 +123,29 @@ def get_test(request):
     head_items = ProblemHeadItem.objects.filter(test=test_item)
     serializer = ProblemItemSerializer(head_items, many=True)
     return Response(serializer.data)
+
+
+class PointItem(APIView):
+    authentication_classes = [TokenAuthSupportCookie]
+    permission_classes = [IsAuthenticated]
+
+    @catch_errors
+    def get(self, request):
+        point_item, = get_data(request, "GET", {"id": partial(get_model, ProblemPointItem)})
+        return Response(ProblemPointItemSerializer(point_item).data)
+
+    @catch_errors
+    def put(self, request):
+        point_item, answer = get_data(
+            request,
+            "data",
+            {
+                "id": partial(get_model, ProblemPointItem),
+                "answer": None,
+            }
+        )
+        point_item.answer = answer
+        point_item.is_answered = True
+        point_item.save()
+        return Response(ProblemPointItemSerializer(point_item).data)
+    
