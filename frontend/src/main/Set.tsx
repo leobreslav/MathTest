@@ -19,6 +19,7 @@ class Set extends React.Component<any, st_for_set> {
         }
     }
     componentDidMount() {
+
         fetch(this.url + "/api/problem_prototypes" , {headers: {
                     Authorization: `Token ${this.state.cook}`
                 }}).then(res => {
