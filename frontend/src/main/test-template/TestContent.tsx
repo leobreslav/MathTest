@@ -69,7 +69,6 @@ export class TestContent extends React.Component<any, TestContentState> {
 
 
     render(): React.ReactNode {
-        console.log("render");
         return (
             <div>
                 <div className="input-group mt-3 mr-auto ml-auto w-50">

@@ -16,7 +16,7 @@ class st_for_login{
 }
 
 class Login extends React.Component<any, st_for_login> {
-
+    private url : string = "http://127.0.0.1:8000"
     constructor(props: any) {
         super(props);
         this.state = {
@@ -38,15 +38,15 @@ class Login extends React.Component<any, st_for_login> {
         let username = this.state.username;
         let password = this.state.password;
         let data = {
-            csrfmiddlewaretoken: getCookie('csrftoken'),
             username,
             email: "",
             password,
         };
         let headers = {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
         };
-        fetch("/api/auth/login/", {
+        fetch(this.url+"/api/auth/login/", {
             method: "POST",
             headers: headers,
             body: JSON.stringify(data),
@@ -59,7 +59,8 @@ class Login extends React.Component<any, st_for_login> {
                 type: "LOGIN",
                 key,
             });
-        });
+        }).catch(err => {
+            console.log(err);})
     }
 
     handleChange(event : any) {
@@ -104,7 +105,8 @@ class Login extends React.Component<any, st_for_login> {
     }
 }
 function getCookie(name: string) {
-    let cookieValue = null;
+    let cookieValue = "";
+    console.log(document.cookie);
     if (document.cookie && document.cookie !== '') {
         let cookies = document.cookie.split(';');
         for (let i = 0; i < cookies.length; i++) {
