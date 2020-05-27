@@ -46,7 +46,7 @@ class Login extends React.Component<any, st_for_login> {
             'Content-Type': 'application/json',
             'X-CSRFToken': getCookie('csrftoken')
         };
-        fetch(this.url+"/api/auth/login/", {
+        fetch("/api/auth/login/", {
             method: "POST",
             headers: headers,
             body: JSON.stringify(data),
