@@ -1,20 +1,37 @@
+from functools import partial
 from django.contrib.auth.models import User
-from django.http import JsonResponse, HttpResponseBadRequest
-
+from django.http import HttpResponseBadRequest
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from api.models import ProblemPrototype, ProblemHead
-from api.serializers import ProblemPrototypeSerializer, ProblemHeadSerializer, UserSerializer
 
-from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from api.logic import generate_test_item
+from api.models import ProblemPrototype, ProblemHead, TestTemplate, Profile, ProblemHeadItem, ProblemPointItem
+from api.serializers import ProblemPrototypeSerializer, ProblemHeadSerializer, ProblemPointItemSerializer, UserSerializer, TemplateSerializer, \
+    ProblemItemSerializer
 
+from .decorators import catch_errors
+from .logic import get_data, get_model, generate_test_template
 # Create your views here.
 
 
+class TokenAuthSupportCookie(TokenAuthentication):
+    """
+    Extend the TokenAuthentication class to support cookie based authentication
+    """
+
+    def authenticate(self, request):
+        if 'auth_token' in request.COOKIES and \
+                        'HTTP_AUTHORIZATION' not in request.META:
+            return self.authenticate_credentials(
+                request.COOKIES.get('auth_token')
+            )
+        return super().authenticate(request)
+
 class ProblemPrototypes(APIView):
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthSupportCookie]
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -33,8 +50,9 @@ class ProblemPrototypes(APIView):
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
 
+
 @api_view(["GET"])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([TokenAuthSupportCookie])
 @permission_classes([IsAuthenticated])
 def problem_heads(request, id=-1):
     if id != -1:
@@ -44,10 +62,90 @@ def problem_heads(request, id=-1):
     serializer = ProblemHeadSerializer(heads, many=True)
     return Response(serializer.data)
 
+
 @api_view(["GET"])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([TokenAuthSupportCookie])
 @permission_classes([IsAuthenticated])
 def users(request):
     data = User.objects.all()
     serializer = UserSerializer(data, many=True)
     return Response(serializer.data)
+
+
+@api_view(["GET"])
+@authentication_classes([TokenAuthSupportCookie])
+@permission_classes([IsAuthenticated])
+def test_templates(request):
+    user_id = request.user.id
+    author = Profile.objects.filter(user_id=user_id)
+
+    if len(author) == 0 or not author.get().has_access:
+        return Response(status=403)
+
+    author_id = author.get().id
+    templates = TestTemplate.objects.filter(author_id=author_id)
+    serializer = TemplateSerializer(templates, many=True)
+    return Response(serializer.data)
+
+
+@api_view(["POST"])
+@authentication_classes([TokenAuthSupportCookie])
+@permission_classes([IsAuthenticated])
+@catch_errors
+def generate_template(request):
+    name, prototypes = get_data(request, "data", {
+        "name": str,
+        "prototype_ids": partial(get_model, ProblemPrototype, many=True)
+    })
+    author = request.user.profile
+
+    generate_test_template(author, name, *prototypes)
+    return Response(status=201)
+
+
+@api_view(["GET"])
+@authentication_classes([TokenAuthSupportCookie])
+@permission_classes([IsAuthenticated])
+def get_test(request):
+    user_id = request.user.id
+    student = Profile.objects.filter(user_id=user_id)
+
+    if len(student) == 0:
+        return Response(status=403)
+    if 'template_id' not in request.GET:
+        return Response(status=400)
+
+    student = student.get()
+    template_id = request.GET['template_id']
+    template = TestTemplate.objects.get(id=template_id)
+
+    test_item = generate_test_item(template, student)
+    head_items = ProblemHeadItem.objects.filter(test=test_item)
+    serializer = ProblemItemSerializer(head_items, many=True)
+    return Response(serializer.data)
+
+
+class PointItem(APIView):
+    authentication_classes = [TokenAuthSupportCookie]
+    permission_classes = [IsAuthenticated]
+
+    @catch_errors
+    def get(self, request):
+        point_item, = get_data(request, "GET", {"id": partial(get_model, ProblemPointItem)})
+        return Response(ProblemPointItemSerializer(point_item).data)
+
+    @catch_errors
+    def put(self, request):
+        point_item, answer = get_data(
+            request,
+            "data",
+            {
+                "id": partial(get_model, ProblemPointItem),
+                "answer": None,
+            }
+        )
+        point_item.answer = answer
+        point_item.is_answered = True
+        point_item.save()
+        return Response(ProblemPointItemSerializer(point_item).data)
+    
