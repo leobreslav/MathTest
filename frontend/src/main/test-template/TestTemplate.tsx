@@ -10,7 +10,6 @@ export class TestTemplate extends React.Component<any, st_for_testtempl> {
 
     constructor(props: any) {
         super(props);
-        console.log(props);
         this.state = {
             cook: props.cook,
         }
