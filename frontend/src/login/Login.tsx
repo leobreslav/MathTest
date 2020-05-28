@@ -1,5 +1,6 @@
 import React from 'react';
 import "bootstrap/dist/css/bootstrap.css"
+import {getCookie} from '../main/Functions';
 
 class st_for_login{
     constructor(idlog: any, idpass : any,username: string, password: string) {
@@ -104,20 +105,6 @@ class Login extends React.Component<any, st_for_login> {
         );
     }
 }
-function getCookie(name: string) {
-    let cookieValue = "";
-    console.log(document.cookie);
-    if (document.cookie && document.cookie !== '') {
-        let cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            let cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
+
 
 export default Login;

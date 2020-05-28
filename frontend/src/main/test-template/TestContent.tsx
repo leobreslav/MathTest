@@ -1,10 +1,13 @@
 import React from 'react';
 import './TestTemplate.css'
+import {ProblemPrototype} from '../DataClasses';
+import {getCookie} from '../Functions';
+
 class TestContentState {
-    chosenProblems: Array<any> = [];
-    availableProblems: Array<any> = [];
+    chosenProblems: ProblemPrototype[] = [];
+    availableProblems: ProblemPrototype[] = [];
     name: string = '';
-    cook: string = '';
+    cookie: string = '';
 }
 
 export class TestContent extends React.Component<any, TestContentState> {
@@ -19,7 +22,7 @@ export class TestContent extends React.Component<any, TestContentState> {
             chosenProblems: [],
             availableProblems: [],
             name: '',
-            cook: props.cook
+            cookie: props.cook
         }
     }
 
@@ -27,7 +30,7 @@ export class TestContent extends React.Component<any, TestContentState> {
     componentDidMount(): void {
         fetch(this.url + "/problem_prototypes"
         , {headers: {
-                    Authorization: `Token ${this.state.cook}`
+                    Authorization: `Token ${this.state.cookie}`
                 }}).then(res => {
             return res.json();
         }).then(data => {
@@ -35,12 +38,11 @@ export class TestContent extends React.Component<any, TestContentState> {
         })
     }
 
-    renderProblems(list: Array<any>, buttonShouldAdd: boolean) {
+    renderProblems(list: Array<ProblemPrototype>, buttonShouldAdd: boolean) {
         let buttonName = 'удалить';
         if (buttonShouldAdd) {
             buttonName = 'Добавить'
         }
-        console.log(list);
         return list.map(item => {
             return (
                 <li className="list-group-item">
@@ -77,13 +79,19 @@ export class TestContent extends React.Component<any, TestContentState> {
                         <button className="btn btn-primary" onClick={() => {
                             const body = {
                                 name: this.state.name,
-                                problems: this.state.chosenProblems
+                                prototype_ids: this.state.chosenProblems.map(
+                                    (prototype: ProblemPrototype) => prototype.id
+                                    )
                             };
-                            fetch(this.url + "crate_template/", {method: 'POST', body: JSON.stringify(body)}).then((res) => {
-                                return res.json()
-                            }).then(
-                                (data) => {
-                                    console.log(data);
+                            fetch("/api/generate_template",
+                                {
+                                    method: 'POST',
+                                    body: JSON.stringify(body),
+                                    headers: {
+                                        Authorization: `Token ${this.state.cookie}`,
+                                        'X-CSRFToken': getCookie('csrftoken'),
+                                        'Content-Type': 'application/json'
+                                    }
                                 }
                             )
                         }}>создать

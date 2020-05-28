@@ -2,23 +2,23 @@ import React from 'react';
 import '../../App.css';
 import {TestContent} from "./TestContent";
 
-class st_for_testtempl{
-    cook: string = ""
+class TestTemplateState{
+    cookie: string = ""
 }
 
-export class TestTemplate extends React.Component<any, st_for_testtempl> {
+export class TestTemplate extends React.Component<any, TestTemplateState> {
 
     constructor(props: any) {
         super(props);
         this.state = {
-            cook: props.cook,
+            cookie: props.cook,
         }
     }
 
     render(): React.ReactNode {
         return (
             <div>
-                <TestContent cook = {this.state.cook} />
+                <TestContent cook = {this.state.cookie} />
             </div>
         )
     }

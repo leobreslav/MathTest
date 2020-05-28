@@ -1,20 +1,22 @@
 import React from 'react';
+import {ProblemHead} from './DataClasses';
 
-class st_for_task {
-    data: any = [];
+
+class TaskState {
+    data: ProblemHead[] = [];
     id: number = 0;
-    cook: string = "";
+    cookie: string = "";
     isLoading: boolean = true
 }
 
-class Task extends React.Component<any, st_for_task> {
+class Task extends React.Component<any, TaskState> {
     private url = "";
     constructor(props : any) {
         super(props);
         this.state = {
             data: [],
             id: props.id,
-            cook: props.cook,
+            cookie: props.cook,
             isLoading: true,
         }
     }
@@ -22,7 +24,7 @@ class Task extends React.Component<any, st_for_task> {
     componentDidMount() {
         fetch(this.url + `/api/problem_heads/${this.state.id}`
             , {headers: {
-                    Authorization: `Token ${this.state.cook}`
+                    Authorization: `Token ${this.state.cookie}`
                 }}).then(res => {
             return res.json();
         }).then(data => {
@@ -36,8 +38,8 @@ class Task extends React.Component<any, st_for_task> {
         if (isLoading) {
             return <div> Загрузка!!!!</div>
         } else {
-            return data.map((item: any) => {
-                return <li key={item} > {(item.problem.length - 20 > 3? item.problem.substring(0, 19) + "..." : item.problem)}</li>
+            return data.map((item: ProblemHead) => {
+                return <li key={item.id} > {(item.problem.length - 20 > 3? item.problem.substring(0, 19) + "..." : item.problem)}</li>
             })
         }
     }
