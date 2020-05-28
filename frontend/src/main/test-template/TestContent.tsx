@@ -11,13 +11,10 @@ class TestContentState {
 }
 
 export class TestContent extends React.Component<any, TestContentState> {
-    private listRef: React.RefObject<any>;
-    private url = "http://localhost:8000/api";
 
     // TODO change any to required type
     constructor(props: any) {
         super(props);
-        this.listRef = React.createRef();
         this.state = {
             chosenProblems: [],
             availableProblems: [],
@@ -28,7 +25,7 @@ export class TestContent extends React.Component<any, TestContentState> {
 
 
     componentDidMount(): void {
-        fetch(this.url + "/problem_prototypes"
+        fetch("/api/problem_prototypes"
         , {headers: {
                     Authorization: `Token ${this.state.cookie}`
                 }}).then(res => {
