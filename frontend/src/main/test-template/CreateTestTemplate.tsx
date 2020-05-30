@@ -13,10 +13,6 @@ class TestContentState {
 
 export class TestTemplate extends React.Component<{}> {
 
-    constructor(props: {}) {
-        super(props);
-    }
-
     render(): React.ReactNode {
         return (
             <div>
@@ -83,6 +79,7 @@ export class TestContent extends React.Component<{}, TestContentState> {
 
     renderAlert(): React.ReactNode {
         if (this.state.show_alert){
+            setInterval(() => {this.setState({show_alert: false})}, 5000)
             return (
                 <Alert variant="success" onClose={() => this.setState({show_alert: false})} dismissible>
                     Template created.

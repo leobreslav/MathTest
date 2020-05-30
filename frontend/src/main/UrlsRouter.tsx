@@ -1,5 +1,6 @@
 import React from 'react';
 import Set from "./Set";
+import '../App.css'
 import Users from "./Users";
 import Login from "../login/Login";
 import {TestTemplatesComponent} from "./test-template/Templates"
@@ -17,10 +18,6 @@ import {TestTemplate} from "./test-template/CreateTestTemplate";
 import { LoginStatus } from './DataClasses';
 
 class UrlsRouter extends React.Component<{}> {
-    constructor(props: any) {
-        super(props);
-    }
-
 
     renderLogin() {
         return (
@@ -28,7 +25,7 @@ class UrlsRouter extends React.Component<{}> {
                 <Redirect to={"/login"}/>
                 <Switch>
                     <Route path="/login">
-                        <Login/>
+                        <Login onLogin={() => {this.forceUpdate()}}/>
                     </Route>
                 </Switch>
             </Router>);
@@ -69,8 +66,7 @@ class UrlsRouter extends React.Component<{}> {
     render() {
         let cookies = new Cookies()
         let state = cookies.get<LoginStatus>("login_status")
-        if (typeof state == undefined){
-            console.debug("HELP")
+        if (state === undefined){
             state = {
                 is_logged_in: false,
                 username: "",
