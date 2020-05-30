@@ -1,26 +1,24 @@
 import React from 'react';
+import {getHeaders} from './Functions';
+import {User} from './DataClasses'
 
-class sr_for_users {
-    data: any = [];
+class UsersState {
+    data: User[] = [];
     isLoading: boolean = true;
-    cook: string = "";
 }
 
-class Users extends React.Component<any, sr_for_users> {
+class Users extends React.Component<{}, UsersState> {
     private url = "";
-    constructor(props : any) {
+    constructor(props : {}) {
         super(props);
         this.state = {
             data: [],
             isLoading: true,
-            cook: props.cook,
         }
     }
     componentDidMount() {
-        fetch(this.url + "/api/users"
-            , {headers: {
-                    Authorization: `Token ${this.state.cook}`
-                }}).then(res => {
+        fetch(this.url + "/api/users",
+         {headers: getHeaders()}).then(res => {
             return res.json();
         }).then(data => {
             this.setState({ data,
@@ -32,8 +30,7 @@ class Users extends React.Component<any, sr_for_users> {
         if (isLoading) {
             return <div> Загрузка!!!!</div>
         } else {
-            return data.map((item: any) => {
-                console.log(item);
+            return data.map((item: User) => {
                 return (
                     <li>{item.username}</li>
                 );

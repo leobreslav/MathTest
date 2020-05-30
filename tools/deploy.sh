@@ -34,6 +34,7 @@ cd /srv/math_test/app/frontend
 
 /usr/bin/npm install > /dev/null --quiet --no-progress
 /usr/bin/npm run build > /dev/null
+rm -r /srv/math_test/react
 mv /srv/math_test/app/frontend/build /srv/math_test/react
 
 sudo /bin/systemctl restart uwsgi

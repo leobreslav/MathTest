@@ -50,19 +50,6 @@ class ProblemPoint(models.Model):
         return f"Point {self.num_in_problem} of {self.problem_head}"
 
 
-class TestTemplate(models.Model):
-    # link to the author of test
-    author = models.ForeignKey('Profile', on_delete=models.SET_NULL, null=True)
-    name = models.CharField(max_length=50)
-
-    class Meta:
-        verbose_name = "Test template"
-        verbose_name_plural = "Test templates"
-
-    def __str__(self):
-        return self.name
-
-
 # match between sets and templates
 class Prototype2Test(models.Model):
     test = models.ForeignKey('TestTemplate', on_delete=models.CASCADE)
@@ -77,10 +64,38 @@ class Prototype2Test(models.Model):
         return f'{self.index} problem in {self.test}'
 
 
+class TestTemplate(models.Model):
+    # link to the author of test
+    author = models.ForeignKey('Profile', on_delete=models.SET_NULL, null=True)
+    name = models.CharField(max_length=50)
+
+    class Meta:
+        verbose_name = "Test template"
+        verbose_name_plural = "Test templates"
+
+    @property
+    def items(self):
+        return self.testitem_set
+    
+    @property
+    def prototypes(self):
+        return map(lambda p2t: p2t.set, Prototype2Test.objects.filter(test=self))
+    
+
+
+
+    def __str__(self):
+        return self.name
+
+
 # instance of test
 class TestItem(models.Model):
     student = models.ForeignKey('Profile', on_delete=models.CASCADE)
     template = models.ForeignKey('TestTemplate', on_delete=models.CASCADE)
+
+    @property
+    def student_full(self):
+        return self.student.user
 
     class Meta:
         verbose_name = "Test instance"
@@ -100,7 +115,8 @@ class Profile(models.Model):
     class Meta:
         verbose_name = "Profile"
         verbose_name_plural = "Profiles"
-
+        
+    
     def __str__(self):
         return f"{self.user.username}'s profile"
 

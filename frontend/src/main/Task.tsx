@@ -1,6 +1,6 @@
 import React from 'react';
 import {ProblemHead} from './DataClasses';
-
+import {getHeaders} from './Functions';
 
 class TaskState {
     data: ProblemHead[] = [];
@@ -23,9 +23,7 @@ class Task extends React.Component<any, TaskState> {
 
     componentDidMount() {
         fetch(this.url + `/api/problem_heads/${this.state.id}`
-            , {headers: {
-                    Authorization: `Token ${this.state.cookie}`
-                }}).then(res => {
+            , {headers: getHeaders()}).then(res => {
             return res.json();
         }).then(data => {
             this.setState({ data,

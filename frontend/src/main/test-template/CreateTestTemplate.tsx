@@ -1,34 +1,49 @@
 import React from 'react';
-import './TestTemplate.css'
 import {ProblemPrototype} from '../DataClasses';
-import {getCookie} from '../Functions';
+import {getHeaders} from '../Functions';
+import {Alert} from 'react-bootstrap'
 
 class TestContentState {
     chosenProblems: ProblemPrototype[] = [];
     availableProblems: ProblemPrototype[] = [];
     name: string = '';
-    cookie: string = '';
+    show_alert: boolean = false;
 }
 
-export class TestContent extends React.Component<any, TestContentState> {
+
+export class TestTemplate extends React.Component<{}> {
+
+    constructor(props: {}) {
+        super(props);
+    }
+
+    render(): React.ReactNode {
+        return (
+            <div>
+                <TestContent/>
+            </div>
+        )
+    }
+}
+
+
+export class TestContent extends React.Component<{}, TestContentState> {
 
     // TODO change any to required type
-    constructor(props: any) {
+    constructor(props: {}) {
         super(props);
         this.state = {
             chosenProblems: [],
             availableProblems: [],
             name: '',
-            cookie: props.cook
+            show_alert: false
         }
     }
 
 
     componentDidMount(): void {
         fetch("/api/problem_prototypes"
-        , {headers: {
-                    Authorization: `Token ${this.state.cookie}`
-                }}).then(res => {
+        , {headers: getHeaders()}).then(res => {
             return res.json();
         }).then(data => {
             this.setState({availableProblems: data});
@@ -66,10 +81,23 @@ export class TestContent extends React.Component<any, TestContentState> {
         })
     }
 
+    renderAlert(): React.ReactNode {
+        if (this.state.show_alert){
+            return (
+                <Alert variant="success" onClose={() => this.setState({show_alert: false})} dismissible>
+                    Template created.
+                </Alert>
+            )
+        }
+        return <div></div>
+    }
 
     render(): React.ReactNode {
         return (
             <div>
+                {
+                    this.renderAlert()
+                }
                 <div className="input-group mt-3 mr-auto ml-auto w-50">
                     <input className="form-control" onChange={ event => this.setState({name: event.target.value})} placeholder="введите название теста"/>
                     <div className="input-group-append">
@@ -84,10 +112,12 @@ export class TestContent extends React.Component<any, TestContentState> {
                                 {
                                     method: 'POST',
                                     body: JSON.stringify(body),
-                                    headers: {
-                                        Authorization: `Token ${this.state.cookie}`,
-                                        'X-CSRFToken': getCookie('csrftoken'),
-                                        'Content-Type': 'application/json'
+                                    headers: getHeaders()
+                                }
+                            ).then(
+                                res => {
+                                    if (res.ok){
+                                        this.setState({show_alert: true, chosenProblems: []});
                                     }
                                 }
                             )

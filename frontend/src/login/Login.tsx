@@ -1,30 +1,27 @@
 import React from 'react';
-import "bootstrap/dist/css/bootstrap.css"
+import {} from 'react-dom';
 import {getCookie} from '../main/Functions';
+import {LoginStatus} from '../main/DataClasses'
+import {Form, Button, Container} from 'react-bootstrap'
+import Cookies from 'universal-cookie';
+import {Redirect} from 'react-router-dom';
 
-class st_for_login{
-    constructor(idlog: any, idpass : any,username: string, password: string) {
-        this.idlog = idlog;
-        this.idpass = idpass;
-        this.username = username;
-        this.password = password;
-    }
-    idlog: any;
-    idpass: any;
-    username: string;
-    password: string;
+class LoginState{
+    username: string = "";
+    password: string = "";
+    login_status: any;
 
 }
 
-class Login extends React.Component<any, st_for_login> {
-    private url : string = "http://127.0.0.1:8000"
-    constructor(props: any) {
+class Login extends React.Component<{}, LoginState> {
+    
+    constructor(props: {}) {
+        console.log("HELP");
         super(props);
         this.state = {
-            idlog: React.createRef(),
-            idpass: React.createRef(),
             username: "",
             password: "",
+            login_status: null,
         };
         this.send = this.send.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -52,56 +49,71 @@ class Login extends React.Component<any, st_for_login> {
             headers: headers,
             body: JSON.stringify(data),
         }).then(res => {
-            return res.json();
-        }).then(data => {
-            console.log(data.key);
-            let key = data.key;
-            this.props.dispatch({
-                type: "LOGIN",
-                key,
-            });
-        }).catch(err => {
-            console.log(err);})
+            res.json().then(data => {
+                if (res.ok){
+                    console.log(res);
+                    let key = data.key;
+                    let cookie: LoginStatus = {
+                        is_logged_in: res.ok,
+                        token: key,
+                        username: username
+                    }
+                    let cookies = new Cookies();
+                    cookies.set("login_status", cookie)
+                    return <Redirect to="/" />
+
+                }
+                else {
+                    this.setState({login_status: data})
+                }
+            })
+        });
     }
 
     handleChange(event : any) {
-        let name = event.target.name;
-        console.log(name);
-        if(name === 'username'){
-            this.setState({username: event.target.value});
+        let target = event.target;
+        let data = target.value;
+        if ( target.name === "username" ) {
+            this.setState({username: data});
+            return;
         }
-        else{
-            this.setState({password: event.target.value});
+        if (target.name === "password"){
+            this.setState({password: data});
+            return;
         }
-        event.preventDefault();
     }
 
     render() {
-        const formsStyle = {
-            width: '350px',
-            height: '20%',
-            marginRight: 'auto',
-            marginLeft: 'auto',
-            marginTop: '20%',
-        };
         return (
-            <div className="container">
-                <form style={formsStyle} className="center-block" onSubmit={this.send}>
-                    <div className="form-group">
-                        <input type="login" name="username" ref={this.state.idlog} value={this.state.username} className="form-control" id="exampleInputEmail1"
-                               aria-describedby="emailHelp" placeholder="логин" onChange={this.handleChange}/>
-                    </div>
-                    <div className="form-group">
-                        <input ref={this.state.idpass} name="password" value={this.state.password} type="password" onChange={this.handleChange} className="form-control"
-                               id="exampleInputPassword1"
-                               placeholder="пароль"/>
-                    </div>
-                    <div className="form-group text-center" style={{display: "block"}}>
-                        <button type="submit" className="btn btn-primary" >Вход
-                        </button>
-                    </div>
-                </form>
-            </div>
+            <Container>
+                <Form>
+                    <Form.Group controlId="formUsername">
+                        <Form.Label>Username</Form.Label>
+                        <Form.Control onChange={this.handleChange} name="username" type="text" placeholder="Enter username" />
+                        <Form.Text className="text-muted">
+                        {this.state.login_status == null || this.state.login_status.username == undefined ? <p></p> : <p>{this.state.login_status.username}</p>}
+                        </Form.Text>
+                    </Form.Group>
+
+                    <Form.Group controlId="formBasicPassword">
+                        <Form.Label>Password</Form.Label>
+                        <Form.Control onChange={this.handleChange} name="password" type="password" placeholder="Password" />
+                        <Form.Text className="text-muted">
+                        {this.state.login_status == null || this.state.login_status.password == undefined ? <div></div> : <p>{this.state.login_status.password}</p>}
+                        </Form.Text>
+                    </Form.Group>
+
+                    <Form.Group controlId="formBasicPassword">
+                        <Form.Text className="text-muted" color="red">
+                        {this.state.login_status == null || this.state.login_status.non_field_errors == undefined ? <div></div> : <p>{this.state.login_status.non_field_errors}</p>}
+                        </Form.Text>
+                    </Form.Group>
+
+                    <Button variant="primary" type="submit" onClick={this.send}>
+                        Submit
+                    </Button>
+                </Form>
+            </Container>
         );
     }
 }
