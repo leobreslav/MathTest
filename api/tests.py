@@ -89,7 +89,9 @@ class TestGetModel(TestCase):
 class TestGenerateTemplateView(APITestCase):
     def setUp(self):
         self.user = User.objects.create(username='test', password='test')
-        self.profile = Profile.objects.create(user=self.user, has_access=True)
+        self.profile = self.user.profile
+        self.profile.has_access = True
+        self.profile.save()
         self.prototypes = [ProblemPrototype.objects.create(name=f"{i}") for i in range(10)]
         self.prototype_ids = list(map(lambda x: x.id, self.prototypes))
     
@@ -108,7 +110,9 @@ class TestGenerateTemplateView(APITestCase):
 class TestGenerateTestTemplate(TestCase):
     def setUp(self):
         u = User.objects.create(username="Test", password="dnsjiajfvj")
-        p = Profile.objects.create(user=u, has_access=True)
+        p = u.profile
+        p.has_access = True
+        p.save()
         self.author = p
         prototypes = [ProblemPrototype.objects.create(name=f"{i}") for i in range(10)]
         self.prototypes = prototypes
@@ -141,7 +145,9 @@ class TestGetTest(APITestCase):
     def setUp(self):
         user = User.objects.create(username='test', password='test')
 
-        profile = Profile.objects.create(user=user, has_access=True)
+        profile = user.profile
+        profile.has_access = True
+        profile.save()
         prototype = ProblemPrototype.objects.create(name='test_prototype')
         problem_head = ProblemHead.objects.create(problem='test problem definition')
         problem_head.prototype.add(prototype)

@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
 
 import string
 import random
@@ -164,3 +165,10 @@ class UserSolutionFile(models.Model):
 
     def __str__(self):
         return f"solution file #{self.id}"
+
+
+def user_create_handler(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance, has_access=False)
+    
+post_save.connect(user_create_handler, sender=User, weak=False, dispatch_uid="models.user_create_handler")
