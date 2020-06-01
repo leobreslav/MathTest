@@ -40,10 +40,20 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'first_name', 'last_name']
 
 
+class TestItemSerializer(serializers.ModelSerializer):
+    student_full = UserSerializer()
+
+    class Meta:
+        model = TestItem
+        fields = ['id', 'student_full']
+
 class TemplateSerializer(serializers.ModelSerializer):
+    items = TestItemSerializer(many=True)
+    prototypes = ProblemPrototypeSerializer(many=True)
+
     class Meta:
         model = TestTemplate
-        fields = ['id', 'author', 'name']
+        fields = ['id', 'name', 'items', 'prototypes']
 
 
 class ProblemPointItemSerializer(serializers.ModelSerializer):

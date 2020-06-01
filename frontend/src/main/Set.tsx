@@ -1,29 +1,25 @@
 import React from 'react';
 import Task from "./Task";
 import {ProblemPrototype} from './DataClasses';
+import {getHeaders} from './Functions'
 
 class SetState{
     data: ProblemPrototype[] =  [];
-    cookie: string = "";
     isLoading: boolean = true;
 }
 
-class Set extends React.Component<any, SetState> {
-    private url = "";
+class Set extends React.Component<{}, SetState> {
 
-    constructor(props : any) {
+    constructor(props : {}) {
         super(props);
         this.state = {
             data: [],
-            cookie: props.cook,
             isLoading: true
         }
     }
     componentDidMount() {
 
-        fetch(this.url + "/api/problem_prototypes" , {headers: {
-                    Authorization: `Token ${this.state.cookie}`
-                }}).then(res => {
+        fetch("/api/problem_prototypes" , {headers: getHeaders()}).then(res => {
             return res.json();
         }).then(data => {
             this.setState({ data,
@@ -37,7 +33,7 @@ class Set extends React.Component<any, SetState> {
         } else {
             return data.map((item: ProblemPrototype) => {
                 return (
-                    <li><div>{item.name}</div><ul><Task cook = {this.state.cookie} id = {item.id}/></ul></li>
+                    <li><div>{item.name}</div><ul><Task id = {item.id}/></ul></li>
                 );
             })
         }

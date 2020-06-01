@@ -1,32 +1,23 @@
 import React from 'react';
 import Set from "./Set";
+import '../App.css'
 import Users from "./Users";
 import Login from "../login/Login";
+import {TestTemplatesComponent} from "./test-template/Templates"
+import {Navbar, Nav} from "react-bootstrap"
+import {Link} from 'react-router-dom';
+import {connect} from 'react-redux';
+
 import {
     BrowserRouter as Router,
     Switch,
     Route,
-    Link,
     Redirect
 } from 'react-router-dom';
-import {TestTemplate} from "./test-template/TestTemplate";
+import {TestTemplate} from "./test-template/CreateTestTemplate";
+import { LoginStatus } from './DataClasses';
 
-
-class st_for_urls {
-    isLogin: boolean = false;
-    key: string = ""
-}
-
-class UrlsRouter extends React.Component<any, st_for_urls> {
-    constructor(props: any) {
-        super(props);
-        console.log(props);
-        this.state = {
-            isLogin: props.state.isLogin,
-            key: props.state.key,
-        }
-    }
-
+class UrlsRouter extends React.Component<{login_status: LoginStatus}> {
 
     renderLogin() {
         return (
@@ -34,51 +25,55 @@ class UrlsRouter extends React.Component<any, st_for_urls> {
                 <Redirect to={"/login"}/>
                 <Switch>
                     <Route path="/login">
-                        <Login dispatch={this.props.dispatch}/>
+                        <Login onLogin={() => {this.forceUpdate()}}/>
                     </Route>
                 </Switch>
             </Router>);
     }
 
     renderMain() {
-        console.log(this.props.state.key);
         return (
             <Router>
-                <Redirect to={"/"}/>
-                <div>
-                    <div>
-                        <Link to="/sets">Sets</Link>
-                        <Link to="/users">Users</Link>
-                        <Link to="/">Test-template</Link>
-                    </div>
-                    <Switch>
-                        <Route path="/sets">
-                            <Set cook={this.props.state.key}/>
+                    <Navbar expand="lg" bg="dark" variant="dark">
+                        
+                        <Nav className="mr-auto">
+                            <Nav.Link as={Link} to="/sets">All Sets</Nav.Link>
+                            <Nav.Link as={Link} to="/users">All Users</Nav.Link>
+                            <Nav.Link as={Link} to="/">Create Template</Nav.Link>
+                            <Nav.Link as={Link} to="/templates">My Templates</Nav.Link>
+                        </Nav>
 
+                    </Navbar>
+                    <Switch>
+                        <Route path="/templates">
+                            <TestTemplatesComponent/>
+                        </Route>
+                        <Route path="/sets">
+                            <Set/>
                         </Route>
 
                         <Route path="/users">
-                            <Users cook={this.props.state.key}/>
+                            <Users/>
                         </Route>
                         <Route path="/">
-                            <TestTemplate cook={this.props.state.key}/>
+                            <TestTemplate/>
                         </Route>
+                        
                     </Switch>
-                </div>
             </Router>);
     }
 
     render() {
-        console.log("render");
-        console.log(this.props.state);
         return (
             <div className='App'>
-                <div className='product-list'>
-                    {(this.props.state.isLogin ? this.renderMain() : this.renderLogin())}
-                </div>
+                    {(this.props.login_status.is_logged_in ? this.renderMain() : this.renderLogin())}
             </div>
         )
     }
 }
 
-export default UrlsRouter;
+export default connect(
+    (state: LoginStatus) => {
+        return {login_status: state};
+    }
+    ) (UrlsRouter);

@@ -9,3 +9,4 @@ db.sqlite3
 frontend/build
 frontend/node_modules
 media
+.vscode

@@ -2,16 +2,18 @@ import './index.css';
 import React from "react";
 import ReactDOM from 'react-dom';
 import UrlsRouter from "./main/UrlsRouter";
-import store from "./redux/store";
 import {BrowserRouter} from "react-router-dom";
-store.subscribe(() =>{
-    render(store.getState());
-});
-let render = (state: any) => ReactDOM.render(
-    <BrowserRouter>
-        <UrlsRouter state = {state} dispatch ={store.dispatch.bind(store)} />
-    </BrowserRouter>,
+import 'bootstrap/dist/css/bootstrap.min.css';
+import {Provider} from 'react-redux'
+import store from './redux/store'
+
+let render = () => ReactDOM.render(
+    <Provider store={store}>
+        <BrowserRouter>
+            <UrlsRouter/>
+        </BrowserRouter>
+    </Provider>,
     document.getElementById('root')
 );
-render(store.getState());
+render();
 

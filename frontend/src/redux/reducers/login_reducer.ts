@@ -1,17 +1,23 @@
-import {Simulate} from "react-dom/test-utils";
-
+import {LoginStatus} from '../../main/DataClasses';
+import Cookies from 'universal-cookie';
+import {setLoginCookie} from '../../main/Functions'
 const LOGIN = "LOGIN";
 
-const login_reducer = (state: any = {isLogin: false}, action: any) => {
+
+const login_reducer = (
+    state: LoginStatus = (new Cookies).get<LoginStatus>("login_status"),
+    action: {type: string, state: LoginStatus}
+    ) : LoginStatus => {
     switch (action.type) {
         case LOGIN:
-            let key = action.key;
-            console.log(key);
-            return Object.assign({}, state, {
-                isLogin: true,
-                key: key
-            });
+            state = action.state;
+            setLoginCookie(state);
+            return state;
         default:
+            if (state === undefined){
+                state = {is_logged_in: false, token: "", username: ""}
+                setLoginCookie(state);
+            }
             return state;
     }
 
