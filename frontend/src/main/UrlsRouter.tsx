@@ -5,8 +5,8 @@ import Users from "./Users";
 import Login from "../login/Login";
 import {TestTemplatesComponent} from "./test-template/Templates"
 import {Navbar, Nav} from "react-bootstrap"
-import Cookies from 'universal-cookie';
 import {Link} from 'react-router-dom';
+import {connect} from 'react-redux';
 
 import {
     BrowserRouter as Router,
@@ -17,7 +17,7 @@ import {
 import {TestTemplate} from "./test-template/CreateTestTemplate";
 import { LoginStatus } from './DataClasses';
 
-class UrlsRouter extends React.Component<{}> {
+class UrlsRouter extends React.Component<{login_status: LoginStatus}> {
 
     renderLogin() {
         return (
@@ -31,7 +31,7 @@ class UrlsRouter extends React.Component<{}> {
             </Router>);
     }
 
-    renderMain(username: string) {
+    renderMain() {
         return (
             <Router>
                     <Navbar expand="lg" bg="dark" variant="dark">
@@ -64,22 +64,16 @@ class UrlsRouter extends React.Component<{}> {
     }
 
     render() {
-        let cookies = new Cookies()
-        let state = cookies.get<LoginStatus>("login_status")
-        if (state === undefined){
-            state = {
-                is_logged_in: false,
-                username: "",
-                token: ""
-            }
-            cookies.set("login_status", state)
-        }
         return (
             <div className='App'>
-                    {(state.is_logged_in ? this.renderMain(state.username) : this.renderLogin())}
+                    {(this.props.login_status.is_logged_in ? this.renderMain() : this.renderLogin())}
             </div>
         )
     }
 }
 
-export default UrlsRouter;
+export default connect(
+    (state: LoginStatus) => {
+        return {login_status: state};
+    }
+    ) (UrlsRouter);

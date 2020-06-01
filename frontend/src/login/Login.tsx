@@ -3,7 +3,7 @@ import {} from 'react-dom';
 import {getCookie} from '../main/Functions';
 import {LoginStatus} from '../main/DataClasses'
 import {Form, Button, Container} from 'react-bootstrap'
-import Cookies from 'universal-cookie';
+import store from '../redux/store';
 
 class LoginState{
     username: string = "";
@@ -44,17 +44,13 @@ class Login extends React.Component<{onLogin: () => void}, LoginState> {
         }).then(res => {
             res.json().then(data => {
                 if (res.ok){
-                    console.log(res);
                     let key = data.key;
                     let cookie: LoginStatus = {
                         is_logged_in: res.ok,
                         token: key,
                         username: username
                     }
-                    let cookies = new Cookies();
-                    cookies.set("login_status", cookie);
-                    this.props.onLogin();
-
+                    store.dispatch({type: "LOGIN", state: cookie});
                 }
                 else {
                     this.setState({login_status: data})

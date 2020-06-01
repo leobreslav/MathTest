@@ -1,8 +1,9 @@
 import Cookies from 'universal-cookie';
-import {LoginStatus} from './DataClasses'
+import {LoginStatus} from './DataClasses';
+
 
 function getCookie(name: string):string {
-    return (new Cookies()).get(name)
+    return (new Cookies()).get(name);
 };
 
 function getHeaders() {
@@ -14,7 +15,12 @@ function getHeaders() {
     }
 }
 
+function setLoginCookie(state: LoginStatus){
+    (new Cookies()).set("login_status", state)
+}
+
 export {
     getCookie,
-    getHeaders
+    getHeaders,
+    setLoginCookie
 }
