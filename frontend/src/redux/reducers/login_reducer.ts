@@ -1,23 +1,24 @@
 import {LoginStatus} from '../../main/DataClasses';
-import Cookies from 'universal-cookie';
-import {setLoginCookie} from '../../main/Functions'
 const LOGIN = "LOGIN";
+const LOGOUT = "LOGOUT"
 
 
 const login_reducer = (
-    state: LoginStatus = (new Cookies).get<LoginStatus>("login_status"),
-    action: {type: string, state: LoginStatus}
-    ) : LoginStatus => {
+    state: LoginStatus = {isLogin: false, token: "", username: ""},
+    action: { type: string, key: string }
+): LoginStatus => {
     switch (action.type) {
         case LOGIN:
-            state = action.state;
-            setLoginCookie(state);
-            return state;
+            return Object.assign({}, state, {
+                isLogin: true,
+            });
+        case LOGOUT:
+            localStorage.setItem("isLogin", "false")
+            return Object.assign({}, state, {
+                isLogin: false,
+                key: "",
+            });
         default:
-            if (state === undefined){
-                state = {is_logged_in: false, token: "", username: ""}
-                setLoginCookie(state);
-            }
             return state;
     }
 

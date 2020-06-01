@@ -35,7 +35,7 @@ class TestItem{
 }
 
 class LoginStatus{
-    is_logged_in: boolean = false;
+    isLogin: boolean = false;
     token: string = "";
     username: string = "";
 }

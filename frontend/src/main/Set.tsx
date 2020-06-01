@@ -1,7 +1,9 @@
 import React from 'react';
 import Task from "./Task";
 import {ProblemPrototype} from './DataClasses';
-import {getHeaders} from './Functions'
+import {getHeaders, loading} from './Functions'
+import url from "../Url";
+import {Spinner} from "react-bootstrap";
 
 class SetState{
     data: ProblemPrototype[] =  [];
@@ -18,8 +20,7 @@ class Set extends React.Component<{}, SetState> {
         }
     }
     componentDidMount() {
-
-        fetch("/api/problem_prototypes" , {headers: getHeaders()}).then(res => {
+        fetch(url+ "/api/problem_prototypes" , {headers: getHeaders()}).then(res => {
             return res.json();
         }).then(data => {
             this.setState({ data,
@@ -29,7 +30,7 @@ class Set extends React.Component<{}, SetState> {
     renderProducts() {
         const {data, isLoading} = this.state;
         if (isLoading) {
-            return <div> Загрузка!!!!</div>
+            return loading;
         } else {
             return data.map((item: ProblemPrototype) => {
                 return (

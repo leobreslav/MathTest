@@ -1,11 +1,8 @@
 import React from 'react';
 import '../../App.css';
 import {TestTemplate} from '../DataClasses';
-import {getHeaders} from '../Functions';
+import {getHeaders, loading} from '../Functions';
 import {Spinner, Container, Card, Row} from 'react-bootstrap'
-
-
-
 
 export class TestTemplatesComponent extends React.Component<{}, {is_loading:boolean, data: TestTemplate[]}> {
 
@@ -48,13 +45,7 @@ export class TestTemplatesComponent extends React.Component<{}, {is_loading:bool
 
     render(): React.ReactNode {
         if (this.state.is_loading) {
-            return (
-                <div>
-                    <Spinner animation="border" role="status">
-                        <span className="sr-only">Loading...</span>
-                    </Spinner>
-                </div>
-            )
+            return loading;
         }
 
         return (
