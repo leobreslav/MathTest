@@ -7,7 +7,8 @@ import {TestTemplatesComponent} from "./test-template/Templates"
 import {Navbar, Nav} from "react-bootstrap"
 import {Link} from 'react-router-dom';
 import {connect} from 'react-redux';
-import {TestItemGenerator, TestComponent} from './test_item/TestItem'
+import {TestItemGenerator} from './test_item/TestItemGenerator'
+import {TestComponent} from './test_item/TestComponent'
 
 import {
     BrowserRouter as Router,
