@@ -17,7 +17,7 @@ class Command(BaseCommand):
             user.save()
             users.append(user)
 
-        profiles = [Profile.objects.get_or_create(user=user)[0] for user in users]
+        profiles = [Profile.objects.get(user=user) for user in users]
         for profile in profiles:
             profile.has_access = True
 
@@ -35,8 +35,8 @@ class Command(BaseCommand):
             curr_prototypes = random.choices(prototypes, k=random.randrange(1, 3))
             head.prototype.add(*curr_prototypes)
 
-        for j in range(random.randrange(1, 5)):
-            for i, head in enumerate(heads):
+        for i, head in enumerate(heads):
+            for j in range(random.randrange(1, 5)):
                 ProblemPoint.objects.create(
                     problem_head=head,
                     answer=f"some answer for point {j} in problem {i}",
