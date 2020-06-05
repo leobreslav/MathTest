@@ -71,7 +71,7 @@ def get_data(request, dict_name:str, args:dict):
     return tuple(ret)
 
 
-def get_model(model:models.Model, ids:Union[int, List[int]], many:bool=False):
+def get_model(model, ids: Union[int, List[int]], many: bool = False):
     """
     Function to get model by id or list of ids
 
