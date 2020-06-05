@@ -8,9 +8,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from api.logic import generate_test_item
-from api.models import ProblemPrototype, ProblemHead, TestTemplate, Profile, ProblemHeadItem, ProblemPointItem
-from api.serializers import ProblemPrototypeSerializer, ProblemHeadSerializer, ProblemPointItemSerializer, UserSerializer, TemplateSerializer, \
-    ProblemItemSerializer
+from api.models import ProblemPrototype, ProblemHead, TestItem, TestTemplate, Profile, ProblemHeadItem, ProblemPointItem
+from api.serializers import ProblemPrototypeSerializer, ProblemHeadSerializer, ProblemPointItemSerializer, TestItemSerializer, UserSerializer, TemplateSerializer, \
+    ProblemItemSerializer, TestSerializer
 
 from .decorators import catch_errors
 from .logic import get_data, get_model, generate_test_template
@@ -106,7 +106,7 @@ def generate_template(request):
 @api_view(["GET"])
 @authentication_classes([TokenAuthSupportCookie])
 @permission_classes([IsAuthenticated])
-def get_test(request):
+def generate_test(request):
     user_id = request.user.id
     student = Profile.objects.filter(user_id=user_id)
 
@@ -120,9 +120,17 @@ def get_test(request):
     template = TestTemplate.objects.get(id=template_id)
 
     test_item = generate_test_item(template, student)
-    head_items = ProblemHeadItem.objects.filter(test=test_item)
-    serializer = ProblemItemSerializer(head_items, many=True)
-    return Response(serializer.data)
+    return Response({"item_id": test_item.id})
+
+@api_view(["GET"])
+@authentication_classes([TokenAuthSupportCookie])
+@permission_classes([IsAuthenticated])
+@catch_errors
+def get_test(request):
+    item, = get_data(request, 'GET', {
+        "id": partial(get_model, TestItem)
+    })
+    return Response(TestSerializer(item).data)
 
 
 class PointItem(APIView):

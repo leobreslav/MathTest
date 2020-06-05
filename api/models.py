@@ -97,6 +97,14 @@ class TestItem(models.Model):
     @property
     def student_full(self):
         return self.student.user
+    
+    @property
+    def problem_items(self):
+        return self.problemheaditem_set
+
+    @property
+    def name(self):
+        return self.template.name
 
     class Meta:
         verbose_name = "Test instance"
