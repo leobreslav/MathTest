@@ -2,7 +2,8 @@ import React from 'react';
 import '../../App.css';
 import {TestTemplate} from '../DataClasses';
 import {getHeaders, loading} from '../Functions';
-import {Spinner, Container, Card, Row} from 'react-bootstrap'
+import {Container, Card, Row} from 'react-bootstrap'
+import url from "../../Url";
 
 export class TestTemplatesComponent extends React.Component<{}, {is_loading:boolean, data: TestTemplate[]}> {
 
@@ -12,7 +13,7 @@ export class TestTemplatesComponent extends React.Component<{}, {is_loading:bool
             is_loading: true,
             data: []
         }
-        fetch("/api/templates", {
+        fetch(url+ "/api/templates", {
             headers: getHeaders(),
         }).then(
             data =>{

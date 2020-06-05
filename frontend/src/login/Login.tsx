@@ -1,12 +1,13 @@
 import React from 'react';
 import {getHeaders} from '../main/Functions';
-import {Form, Button, Container} from 'react-bootstrap'
+import {Form, Button, Container, Alert} from 'react-bootstrap'
 import url from "../Url";
 
 class LoginState {
     username: string = "";
     password: string = "";
-    login_status: any;
+    loginStatus: any;
+    loginMessage: string = "";
 }
 
 class Login extends React.Component<any, LoginState> {
@@ -16,7 +17,8 @@ class Login extends React.Component<any, LoginState> {
         this.state = {
             username: "",
             password: "",
-            login_status: null,
+            loginStatus: null,
+            loginMessage: "",
         };
         this.send = this.send.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -33,7 +35,7 @@ class Login extends React.Component<any, LoginState> {
         };
         fetch(url + "/api/auth/login/", {
             method: "POST",
-            headers: getHeaders("POST"),
+            headers: getHeaders(),
             body: JSON.stringify(data),
         }).then(res => {
             res.json().then(data => {
@@ -43,8 +45,8 @@ class Login extends React.Component<any, LoginState> {
                     localStorage.setItem("token", key);
                     this.props.onLogin({type: "LOGIN", key: key});
                 } else {
-                    console.log("errr");
                     console.log(res.statusText);
+                    this.setState({loginStatus: "error", loginMessage: data["non_field_errors"]})
                 }
             })
         });
@@ -54,11 +56,11 @@ class Login extends React.Component<any, LoginState> {
         let target = event.target;
         let data = target.value;
         if (target.name === "username") {
-            this.setState({username: data});
+            this.setState({username: data, loginStatus: null});
             return;
         }
         if (target.name === "password") {
-            this.setState({password: data});
+            this.setState({password: data, loginStatus: null});
             return;
         }
     }
@@ -80,8 +82,8 @@ class Login extends React.Component<any, LoginState> {
                         <Form.Control onChange={this.handleChange} name="username" type="text"
                                       placeholder="Enter username"/>
                         <Form.Text className="text-muted">
-                            {this.state.login_status === null || this.state.login_status.username === undefined ?
-                                <p></p> : <p>{this.state.login_status.username}</p>}
+                            {this.state.loginStatus === null || this.state.loginStatus.username === undefined ?
+                                <p></p> : <p>{this.state.loginStatus.username}</p>}
                         </Form.Text>
                     </Form.Group>
 
@@ -90,17 +92,20 @@ class Login extends React.Component<any, LoginState> {
                         <Form.Control onChange={this.handleChange} name="password" type="password"
                                       placeholder="Password"/>
                         <Form.Text className="text-muted">
-                            {this.state.login_status === null || this.state.login_status.password === undefined ?
-                                <div></div> : <p>{this.state.login_status.password}</p>}
+                            {this.state.loginStatus === null || this.state.loginStatus.password === undefined ?
+                                <div></div> : <p>{this.state.loginStatus.password}</p>}
                         </Form.Text>
                     </Form.Group>
 
                     <Form.Group controlId="formBasicPassword">
                         <Form.Text className="text-muted" color="red">
-                            {this.state.login_status === null || this.state.login_status.non_field_errors === undefined ?
-                                <div></div> : <p>{this.state.login_status.non_field_errors}</p>}
+                            {this.state.loginStatus === null || this.state.loginStatus.non_field_errors === undefined ?
+                                <div></div> : <p>{this.state.loginStatus.non_field_errors}</p>}
                         </Form.Text>
                     </Form.Group>
+                    {(this.state.loginStatus !== "error" ? (<div/>) : <Alert variant='danger'>
+                        {this.state.loginMessage}
+                    </Alert>)}
                     <div className="text-center">
                         <Button variant="primary" type="submit" onClick={this.send}>
                             Submit
@@ -111,6 +116,5 @@ class Login extends React.Component<any, LoginState> {
         );
     }
 }
-
 
 export default Login;

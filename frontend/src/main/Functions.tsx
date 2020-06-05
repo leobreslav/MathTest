@@ -1,5 +1,4 @@
 import Cookies from 'universal-cookie';
-import {LoginStatus} from './DataClasses';
 import {Spinner} from "react-bootstrap";
 import React from "react";
 
@@ -24,20 +23,12 @@ function getCookie(name: string): string {
     }
 }
 
-function getHeaders(type: string = "GET") {
-    let headers = {
-        'Authorization': "",
-        'X-CSRFToken': getCookie('csrftoken'),
-        'Content-Type': 'application/json'
-    }
-    if (type === "GET") {
-        headers.Authorization = `Token ${localStorage.getItem("token")}`;
-    }
+function getHeaders() {
     return {
-        Authorization: `Token ${localStorage.getItem("token")}`,
+        'Authorization': `Token ${localStorage.getItem("token")}`,
         'X-CSRFToken': getCookie('csrftoken'),
         'Content-Type': 'application/json'
-    }
+    };
 }
 
 function loading() {

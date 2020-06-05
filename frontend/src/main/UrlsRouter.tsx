@@ -5,6 +5,7 @@ import Users from "./Users";
 import Login from "../login/Login";
 import {TestTemplatesComponent} from "./test-template/Templates"
 import {Navbar, Nav} from "react-bootstrap"
+import {connect} from 'react-redux'
 import {
     BrowserRouter as Router,
     Switch,
@@ -14,10 +15,19 @@ import {
 } from 'react-router-dom';
 import {TestTemplate} from "./test-template/CreateTestTemplate";
 
-class UrlsRouter extends React.Component<any, any>{
+class UrlsRouter extends React.Component<any, any> {
 
-    constructor(props : any) {
+    constructor(props: any) {
         super(props);
+        this.exit.bind(this)
+        this.login.bind(this)
+    }
+
+    exit() {
+        this.props.logOut();
+    }
+    login() {
+        this.props.logIn();
     }
 
     renderLogin() {
@@ -26,7 +36,7 @@ class UrlsRouter extends React.Component<any, any>{
                 <Redirect to={"/login"}/>
                 <Switch>
                     <Route path="/login">
-                        <Login onLogin = {this.props.dispatch}/>
+                        <Login onLogin={() => this.login()}/>
                     </Route>
                 </Switch>
             </Router>);
@@ -35,50 +45,56 @@ class UrlsRouter extends React.Component<any, any>{
     renderMain() {
         return (
             <Router>
-                    <Navbar expand="lg" bg="dark" variant="dark">
-                        
-                        <Nav className="mr-auto">
-                            <Nav.Link as={Link} to="/sets">All Sets</Nav.Link>
-                            <Nav.Link as={Link} to="/users">All Users</Nav.Link>
-                            <Nav.Link as={Link} to="/">Create Template</Nav.Link>
-                            <Nav.Link as={Link} to="/templates">My Templates</Nav.Link>
-                        </Nav>
+                <Navbar expand="lg" bg="dark" variant="dark">
 
-                        <Link to="/login" onClick={() => {
-                            console.log("keydown");
-                            this.props.dispatch({type: "LOGOUT"})
-                        }}>
-                            Exit
-                        </Link>
+                    <Nav className="mr-auto">
+                        <Nav.Link as={Link} to="/sets">All Sets</Nav.Link>
+                        <Nav.Link as={Link} to="/users">All Users</Nav.Link>
+                        <Nav.Link as={Link} to="/">Create Template</Nav.Link>
+                        <Nav.Link as={Link} to="/templates">My Templates</Nav.Link>
+                    </Nav>
 
-                    </Navbar>
-                    <Switch>
-                        <Route path="/templates">
-                            <TestTemplatesComponent/>
-                        </Route>
-                        <Route path="/sets">
-                            <Set/>
-                        </Route>
+                    <Link to="/login" onClick={() => {
+                        this.exit();
+                    }}>
+                        Exit
+                    </Link>
 
-                        <Route path="/users">
-                            <Users/>
-                        </Route>
-                        <Route path="/">
-                            <TestTemplate/>
-                        </Route>
-                        
-                    </Switch>
+                </Navbar>
+                <Switch>
+                    <Route path="/templates">
+                        <TestTemplatesComponent/>
+                    </Route>
+                    <Route path="/sets">
+                        <Set/>
+                    </Route>
+
+                    <Route path="/users">
+                        <Users/>
+                    </Route>
+                    <Route path="/">
+                        <TestTemplate/>
+                    </Route>
+
+                </Switch>
             </Router>);
     }
 
     render() {
-        console.log(localStorage.getItem("isLogin"));
         return (
-            <div >
-                    {(localStorage.getItem("isLogin") === "true" ? this.renderMain() : this.renderLogin())}
+            <div>
+                {(localStorage.getItem("isLogin") === "true" ? this.renderMain() : this.renderLogin())}
             </div>
         )
     }
 }
 
-export default UrlsRouter;
+export default connect(state => ({state: state}),
+    dispatch => ({
+        logOut: () => {
+            dispatch({type: 'LOGOUT'});
+        },
+        logIn: () =>{
+            dispatch({type: 'LOGIN'})
+        }
+    }))(UrlsRouter);

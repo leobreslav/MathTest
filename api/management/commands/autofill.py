@@ -10,7 +10,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         users = [User.objects.get_or_create(id=i, username=f't_username_{i}', password='ja9dsf03DFAd')[0] for i in range(6)]
-        profiles = [Profile.objects.get_or_create(user=user, has_access=True)[0] for user in users]
+        profiles = [Profile.objects.get_or_create(user=user)[0] for user in users]
+        for profile in profiles:
+            profile.has_access = True
         prototypes = [ProblemPrototype.objects.create(
             name=f"prototype #{i}",
             description=f"some description in prototype #{i}"
