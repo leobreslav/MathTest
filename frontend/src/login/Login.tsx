@@ -10,9 +10,9 @@ class LoginState {
     loginMessage: string = "";
 }
 
-class Login extends React.Component<any, LoginState> {
+class Login extends React.Component<{onLogin: ({}) => void}, LoginState> {
 
-    constructor(props: any) {
+    constructor(props: {onLogin: ({}) => void}) {
         super(props);
         this.state = {
             username: "",
@@ -40,7 +40,7 @@ class Login extends React.Component<any, LoginState> {
         }).then(res => {
             res.json().then(data => {
                 if (res.ok) {
-                    let key = data.key;
+                    let key: string = data.key;
                     localStorage.setItem("isLogin", "true");
                     localStorage.setItem("token", key);
                     this.props.onLogin({type: "LOGIN", key: key});
