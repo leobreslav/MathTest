@@ -2,7 +2,7 @@ import random
 
 from .models import *
 from .exceptions import BadRequestException, NotAllowedException
-from typing import Union, List
+from typing import Union, List, Type
 
 
 def generate_test_template(author, name, *task_prototypes):
@@ -71,7 +71,7 @@ def get_data(request, dict_name:str, args:dict):
     return tuple(ret)
 
 
-def get_model(model:models.Model, ids:Union[int, List[int]], many:bool=False):
+def get_model(model: Type[models.Model], ids: Union[int, List[int]], many: bool = False):
     """
     Function to get model by id or list of ids
 
