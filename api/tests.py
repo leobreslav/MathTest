@@ -1,12 +1,14 @@
-from api.logic import generate_test_template
+from io import StringIO
+from django.core.management import call_command
 from django.test import TestCase
-from .logic import get_data, get_model
+from rest_framework.test import APIClient, APITestCase
+
+from api.logic import generate_test_template
 from .exceptions import BadRequestException
-from rest_framework.test import APIClient, APITestCase
-from .models import *
 from .exceptions import NotAllowedException
-from django.contrib.auth.models import User
-from rest_framework.test import APIClient, APITestCase
+from .logic import get_data, get_model
+from .models import *
+
 
 class TestGetData(TestCase):
     class FakeRequest:
@@ -22,7 +24,6 @@ class TestGetData(TestCase):
             "arr_int": ["1", "2", "3"]
         }
 
-    
     def testSmoke(self):
         self.assertEqual(
             get_data(
@@ -58,6 +59,7 @@ class TestGetData(TestCase):
             ),
             ("1", 1.0034, ["1", "2", "3"])
         )
+
 
 class TestGetModel(TestCase):
     def setUp(self):
@@ -106,7 +108,6 @@ class TestGenerateTemplateView(APITestCase):
         self.assertEqual(r.status_code, 201)
         
 
-
 class TestGenerateTestTemplate(TestCase):
     def setUp(self):
         u = User.objects.create(username="Test", password="dnsjiajfvj")
@@ -140,7 +141,6 @@ class TestGenerateTestTemplate(TestCase):
             generate_test_template(self.author, "test", *[])
 
 
-
 class TestGetTest(APITestCase):
     def setUp(self):
         user = User.objects.create(username='test', password='test')
@@ -163,3 +163,13 @@ class TestGetTest(APITestCase):
         self.assertEquals(request.status_code, 200)
 
         self.assertEquals(request.data[0]['problem_head']['problem'], 'test problem definition')
+
+
+class AutofillTest(APITestCase):
+    def test_smoke(self):
+        out = StringIO()
+        call_command('autofill', stdout=out)
+        self.assertEqual('', out.getvalue())
+
+        c = APIClient()
+        self.assertEqual(c.login(username='t_username_5', password='ja9dsf03DFAd'), True)
