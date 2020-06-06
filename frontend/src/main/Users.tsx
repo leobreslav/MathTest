@@ -2,7 +2,6 @@ import React from 'react';
 import {getHeaders, loading} from './Functions';
 import {User} from './DataClasses'
 import url from "../Url";
-import {Spinner} from "react-bootstrap";
 
 class UsersState {
     data: User[] = [];

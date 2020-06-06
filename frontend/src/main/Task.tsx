@@ -7,17 +7,15 @@ import {Spinner} from "react-bootstrap";
 class TaskState {
     data: ProblemHead[] = [];
     id: number = 0;
-    cookie: string = "";
     isLoading: boolean = true
 }
 
-class Task extends React.Component<any, TaskState> {
-    constructor(props: any) {
+class Task extends React.Component<{id: number}, TaskState> {
+    constructor(props: {id: number, cookie: string} ) {
         super(props);
         this.state = {
             data: [],
             id: props.id,
-            cookie: props.cook,
             isLoading: true,
         }
     }

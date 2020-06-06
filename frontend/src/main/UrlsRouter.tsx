@@ -15,9 +15,9 @@ import {
 } from 'react-router-dom';
 import {TestTemplate} from "./test-template/CreateTestTemplate";
 
-class UrlsRouter extends React.Component<any, any> {
+class UrlsRouter extends React.Component<{logOut: () => void, logIn: () => void}>{
 
-    constructor(props: any) {
+    constructor(props: {logOut: () => void, logIn: () => void}) {
         super(props);
         this.exit.bind(this)
         this.login.bind(this)
