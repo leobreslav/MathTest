@@ -13,6 +13,8 @@ SECRET_KEY = "YourSecretKey"
 
 ALLOWED_HOSTS = []
 
+CORS_ORIGIN_ALLOW_ALL = False
+
 STATIC_URL = "/static/"
 
 STATIC_ROOT = ""

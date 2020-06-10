@@ -17,9 +17,21 @@ import {
     Redirect
 } from 'react-router-dom';
 import {TestTemplate} from "./test-template/CreateTestTemplate";
-import { LoginStatus } from './DataClasses';
 
-class UrlsRouter extends React.Component<{login_status: LoginStatus}> {
+class UrlsRouter extends React.Component<{logOut: () => void, logIn: () => void}>{
+
+    constructor(props: {logOut: () => void, logIn: () => void}) {
+        super(props);
+        this.exit.bind(this)
+        this.login.bind(this)
+    }
+
+    exit() {
+        this.props.logOut();
+    }
+    login() {
+        this.props.logIn();
+    }
 
     renderLogin() {
         return (
@@ -27,7 +39,7 @@ class UrlsRouter extends React.Component<{login_status: LoginStatus}> {
                 <Redirect to={"/login"}/>
                 <Switch>
                     <Route path="/login">
-                        <Login onLogin={() => {this.forceUpdate()}}/>
+                        <Login onLogin={() => this.login()}/>
                     </Route>
                 </Switch>
             </Router>);
@@ -36,15 +48,20 @@ class UrlsRouter extends React.Component<{login_status: LoginStatus}> {
     renderMain() {
         return (
             <Router>
-                    <Navbar expand="lg" bg="dark" variant="dark">
-                        
-                        <Nav className="mr-auto">
-                            <Nav.Link as={Link} to="/sets">All Sets</Nav.Link>
-                            <Nav.Link as={Link} to="/users">All Users</Nav.Link>
-                            <Nav.Link as={Link} to="/">Create Template</Nav.Link>
-                            <Nav.Link as={Link} to="/templates">My Templates</Nav.Link>
-                        </Nav>
+                <Navbar expand="lg" bg="dark" variant="dark">
 
+                    <Nav className="mr-auto">
+                        <Nav.Link as={Link} to="/sets">All Sets</Nav.Link>
+                        <Nav.Link as={Link} to="/users">All Users</Nav.Link>
+                        <Nav.Link as={Link} to="/">Create Template</Nav.Link>
+                        <Nav.Link as={Link} to="/templates">My Templates</Nav.Link>
+                    </Nav>
+
+                    <Link to="/login" onClick={() => {
+                        this.exit();
+                    }}>
+                        Exit
+                    </Link>
                     </Navbar>
                     <Switch>
                         <Route path="/templates">
@@ -53,32 +70,36 @@ class UrlsRouter extends React.Component<{login_status: LoginStatus}> {
                         <Route path="/generate_test" component={TestItemGenerator}>
                         </Route>
                         <Route path="/test" component={TestComponent}></Route>
-                        <Route path="/sets">
-                            <Set/>
-                        </Route>
+                    <Route path="/sets">
+                        <Set/>
+                    </Route>
 
-                        <Route path="/users">
-                            <Users/>
-                        </Route>
-                        <Route path="/">
-                            <TestTemplate/>
-                        </Route>
-                        
-                    </Switch>
+                    <Route path="/users">
+                        <Users/>
+                    </Route>
+                    <Route path="/">
+                        <TestTemplate/>
+                    </Route>
+
+                </Switch>
             </Router>);
     }
 
     render() {
         return (
-            <div className='App'>
-                    {(this.props.login_status.is_logged_in ? this.renderMain() : this.renderLogin())}
+            <div>
+                {(localStorage.getItem("isLogin") === "true" ? this.renderMain() : this.renderLogin())}
             </div>
         )
     }
 }
 
-export default connect(
-    (state: LoginStatus) => {
-        return {login_status: state};
-    }
-    ) (UrlsRouter);
+export default connect(state => ({state: state}),
+    dispatch => ({
+        logOut: () => {
+            dispatch({type: 'LOGOUT'});
+        },
+        logIn: () =>{
+            dispatch({type: 'LOGIN'})
+        }
+    }))(UrlsRouter);

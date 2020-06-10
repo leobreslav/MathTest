@@ -1,26 +1,48 @@
 import Cookies from 'universal-cookie';
-import {LoginStatus} from './DataClasses';
+import {Spinner} from "react-bootstrap";
+import React from "react";
 
 
-function getCookie(name: string):string {
-    return (new Cookies()).get(name);
-};
-
-function getHeaders() {
-    let cookies = new Cookies();
-    return {
-        Authorization: `Token ${cookies.get<LoginStatus>("login_status").token}`,
-        'X-CSRFToken': getCookie('csrftoken'),
-        'Content-Type': 'application/json'
+function getCookie(name: string): string {
+    let cookie_csrf: string = (new Cookies()).get(name);
+    if (cookie_csrf)
+        return cookie_csrf;
+    else {
+        if (document.cookie && document.cookie !== '') {
+            let cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                let cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookie_csrf = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookie_csrf;
     }
 }
 
-function setLoginCookie(state: LoginStatus){
-    (new Cookies()).set("login_status", state)
+function getHeaders() {
+    return {
+        'Authorization': `Token ${localStorage.getItem("token")}`,
+        'X-CSRFToken': getCookie('csrftoken'),
+        'Content-Type': 'application/json'
+    };
 }
+
+function loading() {
+    return (
+        <div className="text-center">
+            <Spinner animation="border" role="status">
+                <span className="sr-only">Loading...</span>
+            </Spinner>
+        </div>);
+}
+
 
 export {
     getCookie,
     getHeaders,
-    setLoginCookie
+    loading
 }

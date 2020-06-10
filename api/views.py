@@ -6,13 +6,14 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from rest_framework.request import Request
 from api.logic import generate_test_item
 from api.models import ProblemPrototype, ProblemHead, TestItem, TestTemplate, Profile, ProblemHeadItem, ProblemPointItem
 from api.serializers import ProblemPrototypeSerializer, ProblemHeadSerializer, ProblemPointItemSerializer, TestItemSerializer, UserSerializer, TemplateSerializer, \
     ProblemItemSerializer, TestSerializer
 
 from .decorators import catch_errors
+from .exceptions import NotAllowedException, BadRequestException
 from .logic import get_data, get_model, generate_test_template
 # Create your views here.
 
@@ -156,4 +157,25 @@ class PointItem(APIView):
         point_item.is_answered = True
         point_item.save()
         return Response(ProblemPointItemSerializer(point_item).data)
-    
+
+
+@api_view(["POST"])
+@authentication_classes([TokenAuthSupportCookie])
+@permission_classes([IsAuthenticated])
+@catch_errors
+def check_test_point(request):
+    pp_item_id, score, comment = get_data(request, 'POST', {"point_id": int, "score": int, "comment": str})
+
+    pp_item = get_model(ProblemPointItem, pp_item_id)
+    user_id = pp_item.problem_item.test.template.author.user_id
+    if user_id != request.user.id:
+        raise NotAllowedException("You are not allowed to check this test")
+
+    if not pp_item.is_answered:
+        raise BadRequestException("This point has not been answered yet, nothing to check")
+
+    pp_item.score = score
+    pp_item.comment = comment
+    pp_item.save()
+
+    return Response(ProblemPointItemSerializer(pp_item).data)
