@@ -1,30 +1,30 @@
 import React from 'react';
-import {} from 'react-dom';
-import {getCookie} from '../main/Functions';
-import {LoginStatus} from '../main/DataClasses'
-import {Form, Button, Container} from 'react-bootstrap'
-import store from '../redux/store';
+import {getHeaders} from '../main/Functions';
+import {Form, Button, Container, Alert} from 'react-bootstrap'
+import url from "../Url";
 
-class LoginState{
+class LoginState {
     username: string = "";
     password: string = "";
-    login_status: any;
+    loginStatus: any;
+    loginMessage: string = "";
 }
 
 class Login extends React.Component<{onLogin: () => void}, LoginState> {
-    
+
     constructor(props: {onLogin: () => void}) {
         super(props);
         this.state = {
             username: "",
             password: "",
-            login_status: null,
+            loginStatus: null,
+            loginMessage: "",
         };
         this.send = this.send.bind(this);
         this.handleChange = this.handleChange.bind(this);
     }
 
-    send(event : any) {
+    send(event: any) {
         event.preventDefault();
         let username = this.state.username;
         let password = this.state.password;
@@ -33,79 +33,88 @@ class Login extends React.Component<{onLogin: () => void}, LoginState> {
             email: "",
             password,
         };
-        let headers = {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
-        };
-        fetch("/api/auth/login/", {
+        fetch(url + "/api/auth/login/", {
             method: "POST",
-            headers: headers,
+            headers: getHeaders(),
             body: JSON.stringify(data),
         }).then(res => {
             res.json().then(data => {
-                if (res.ok){
-                    let key = data.key;
-                    let cookie: LoginStatus = {
-                        is_logged_in: res.ok,
-                        token: key,
-                        username: username
-                    }
-                    store.dispatch({type: "LOGIN", state: cookie});
-                }
-                else {
-                    this.setState({login_status: data})
+                if (res.ok) {
+                    let key: string = data.key;
+                    localStorage.setItem("isLogin", "true");
+                    localStorage.setItem("token", key);
+                    this.props.onLogin();
+                } else {
+                    console.log(res.statusText);
+                    this.setState({loginStatus: "error", loginMessage: data["non_field_errors"]})
                 }
             })
         });
     }
 
-    handleChange(event : any) {
+    handleChange(event: any) {
         let target = event.target;
         let data = target.value;
-        if ( target.name === "username" ) {
-            this.setState({username: data});
+        if (target.name === "username") {
+            this.setState({username: data, loginStatus: null});
             return;
         }
-        if (target.name === "password"){
-            this.setState({password: data});
+        if (target.name === "password") {
+            this.setState({password: data, loginStatus: null});
             return;
         }
     }
 
     render() {
+        const formsStyle = {
+            width: '350px',
+            height: '20%',
+            marginRight: 'auto',
+            marginLeft: 'auto',
+            marginTop: '20%',
+
+        };
         return (
             <Container>
-                <Form>
+                <Form style={formsStyle}>
                     <Form.Group controlId="formUsername">
                         <Form.Label>Username</Form.Label>
-                        <Form.Control onChange={this.handleChange} name="username" type="text" placeholder="Enter username" />
+                        <Form.Control onChange={this.handleChange} name="username" type="text"
+                                      placeholder="Enter username"/>
                         <Form.Text className="text-muted">
-                        {this.state.login_status === null || this.state.login_status.username === undefined ? <p></p> : <p>{this.state.login_status.username}</p>}
+                            {this.state.loginStatus === null || this.state.loginStatus.username === undefined ?
+                                <p></p> : <p>{this.state.loginStatus.username}</p>}
                         </Form.Text>
                     </Form.Group>
 
                     <Form.Group controlId="formBasicPassword">
                         <Form.Label>Password</Form.Label>
-                        <Form.Control onChange={this.handleChange} name="password" type="password" placeholder="Password" />
+                        <Form.Control onChange={this.handleChange} name="password" type="password"
+                                      placeholder="Password"/>
                         <Form.Text className="text-muted">
-                        {this.state.login_status === null || this.state.login_status.password === undefined ? <div></div> : <p>{this.state.login_status.password}</p>}
+                            {this.state.loginStatus === null || this.state.loginStatus.password === undefined ?
+                                <div></div> : <p>{this.state.loginStatus.password}</p>}
                         </Form.Text>
                     </Form.Group>
 
                     <Form.Group controlId="formBasicPassword">
                         <Form.Text className="text-muted" color="red">
-                        {this.state.login_status === null || this.state.login_status.non_field_errors === undefined ? <div></div> : <p>{this.state.login_status.non_field_errors}</p>}
+                            {this.state.loginStatus === null || this.state.loginStatus.non_field_errors === undefined ?
+                                <div></div> : <p>{this.state.loginStatus.non_field_errors}</p>}
                         </Form.Text>
                     </Form.Group>
-
-                    <Button variant="primary" type="submit" onClick={this.send}>
-                        Submit
-                    </Button>
+                    {(this.state.loginStatus !== "error" ? (<div/>) : <Alert variant='danger'>
+                        {this.state.loginMessage}
+                    </Alert>)}
+                    <div className="text-center">
+                        <Button variant="primary" type="submit" onClick={this.send}>
+                            Submit
+                        </Button>
+                    </div>
                 </Form>
             </Container>
         );
     }
 }
-
 
 export default Login;

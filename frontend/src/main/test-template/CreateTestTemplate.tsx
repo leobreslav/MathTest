@@ -2,6 +2,7 @@ import React from 'react';
 import {ProblemPrototype} from '../DataClasses';
 import {getHeaders} from '../Functions';
 import {Alert} from 'react-bootstrap'
+import url from "../../Url";
 
 class TestContentState {
     chosenProblems: ProblemPrototype[] = [];
@@ -38,7 +39,7 @@ export class TestContent extends React.Component<{}, TestContentState> {
 
 
     componentDidMount(): void {
-        fetch("/api/problem_prototypes"
+        fetch(url+"/api/problem_prototypes"
         , {headers: getHeaders()}).then(res => {
             return res.json();
         }).then(data => {
