@@ -72,7 +72,7 @@ def get_data(request, dict_name:str, args:Dict[str, Union[Callable[[str], Any], 
 
 
 T = TypeVar('T', bound=models.Model)
-def get_model(model: Type[T], ids: Union[int, List[int]], many: bool = False) -> Any:
+def get_model(model: Type[T], ids: Union[int, Sequence[int]], many: bool = False) -> Any:
     """
     Function to get model by id or list of ids
 
@@ -90,7 +90,7 @@ def get_model(model: Type[T], ids: Union[int, List[int]], many: bool = False) ->
             raise BadRequestException(f"Wrong id of model")
         return mod[0]
     ret: List[T] = []
-    assert(isinstance(ids, List))
+    assert(isinstance(ids, Sequence))
     for id in ids:
         mod = model.objects.filter(id=id)
         if len(mod) == 0:
