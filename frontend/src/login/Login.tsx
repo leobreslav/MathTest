@@ -10,9 +10,9 @@ class LoginState {
     loginMessage: string = "";
 }
 
-class Login extends React.Component<{onLogin: ({}) => void}, LoginState> {
+class Login extends React.Component<{onLogin: () => void}, LoginState> {
 
-    constructor(props: {onLogin: ({}) => void}) {
+    constructor(props: {onLogin: () => void}) {
         super(props);
         this.state = {
             username: "",
@@ -43,7 +43,7 @@ class Login extends React.Component<{onLogin: ({}) => void}, LoginState> {
                     let key: string = data.key;
                     localStorage.setItem("isLogin", "true");
                     localStorage.setItem("token", key);
-                    this.props.onLogin({type: "LOGIN", key: key});
+                    this.props.onLogin();
                 } else {
                     console.log(res.statusText);
                     this.setState({loginStatus: "error", loginMessage: data["non_field_errors"]})
