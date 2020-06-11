@@ -16,7 +16,7 @@ class Command(BaseCommand):
             names = []
             for i, prototype in enumerate(prototypes):
                 if 'name' not in prototype or 'description' not in prototype or \
-                        'ProblemHeads' not in prototype:
+                        'problem_heads' not in prototype:
                     self.stderr.write('import failed')
                     self.stderr.write('error in prototype #' + str(i + 1) + ": some required fields are not present")
                     return
@@ -30,7 +30,7 @@ class Command(BaseCommand):
                 if len(ProblemPrototype.objects.filter(name=prototype['name'])) > 0:
                     self.stdout.write('WARNING: prototype #' + str(i + 1) + ' is already present in the db, skipping')
 
-                for k, head in enumerate(prototype['ProblemHeads']):
+                for k, head in enumerate(prototype['problem_heads']):
                     if 'problem' not in head or 'problem_points_answers' not in head:
                         self.stderr.write('import failed')
                         self.stderr.write('error in prototype #' + str(i + 1) + " in problem #" + str(k + 1) +
@@ -48,9 +48,9 @@ class Command(BaseCommand):
                 names.append(prototype['name'])
                 p = ProblemPrototype.objects.create(name=prototype['name'], description=prototype['description'])
 
-                for j, head in enumerate(prototype['ProblemHeads']):
+                for j, head in enumerate(prototype['problem_heads']):
                     self.stdout.write('\rimporting ' + prototype['name'] + ' #' + str(j + 1) + ' of ' +
-                                      str(len(prototype['ProblemHeads'])), ending='                                 ')
+                                      str(len(prototype['problem_heads'])), ending='                                 ')
                     h = ProblemHead.objects.create(problem=head['problem'])
                     h.prototype.add(p)
 
