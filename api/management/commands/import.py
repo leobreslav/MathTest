@@ -1,43 +1,42 @@
 import json
 
-from django.core.management import BaseCommand
+from django.core.management import BaseCommand, CommandError
 
 from api.models import ProblemPrototype, ProblemHead, ProblemPoint
 
 
+def check_required_fields(prototypes):
+    for i, prototype in enumerate(prototypes):
+        if 'name' not in prototype or 'description' not in prototype or \
+                'problem_heads' not in prototype:
+            raise CommandError('import failed\nerror in prototype #' + str(i + 1) +
+                               ": some required fields are not present")
+
+        for k, head in enumerate(prototype['problem_heads']):
+            if 'problem' not in head or 'problem_points_answers' not in head:
+                raise CommandError('import failed\nerror in prototype #' + str(i + 1) + " in problem #" + str(k + 1)
+                                   + ": some required fields are not present")
+
+
+def check_name_duplicates(prototypes):
+    names = []
+    for i, prototype in enumerate(prototypes):
+        if prototype['name'] in names:
+            raise CommandError(
+                'import failed\nerror in prototypes #' + str(names.index(prototype['name']) + 1) + ' and #' +
+                str(i + 1) + ': names are equal')
+
+
 class Command(BaseCommand):
     def add_arguments(self, parser):
-        parser.add_argument('file_path', nargs='?')
+        parser.add_argument('file_path')
 
     def handle(self, *args, **options):
         with open(options['file_path']) as f:
             prototypes = json.load(f)
 
-            names = []
-            for i, prototype in enumerate(prototypes):
-                if 'name' not in prototype or 'description' not in prototype or \
-                        'problem_heads' not in prototype:
-                    self.stderr.write('import failed')
-                    self.stderr.write('error in prototype #' + str(i + 1) + ": some required fields are not present")
-                    return
-
-                if prototype['name'] in names:
-                    self.stderr.write('import failed')
-                    self.stderr.write('error in prototypes #' + str(names.index(prototype['name']) + 1) + ' and #' +
-                                      str(i + 1) + ': names are equal')
-                    return
-
-                if len(ProblemPrototype.objects.filter(name=prototype['name'])) > 0:
-                    self.stdout.write('WARNING: prototype #' + str(i + 1) + ' is already present in the db, skipping')
-
-                for k, head in enumerate(prototype['problem_heads']):
-                    if 'problem' not in head or 'problem_points_answers' not in head:
-                        self.stderr.write('import failed')
-                        self.stderr.write('error in prototype #' + str(i + 1) + " in problem #" + str(k + 1) +
-                                          ": some required fields are not present")
-                        return
-
-                names.append(prototype['name'])
+            check_required_fields(prototypes)
+            check_name_duplicates(prototypes)
 
             names = []
             self.stdout.write('test', ending='')
