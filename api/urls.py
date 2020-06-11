@@ -1,7 +1,7 @@
 from django.urls import path
 
-from api.views import PointItem, ProblemPrototypes, problem_heads, users, test_templates, generate_template, get_test, \
-    check_test_point
+
+from api.views import PointItem, ProblemPrototypes, problem_heads, users, test_templates, generate_template, generate_test, get_test, check_test_point
 
 urlpatterns = [
     path('problem_prototypes', ProblemPrototypes.as_view()),
@@ -10,7 +10,8 @@ urlpatterns = [
     path('users', users),
     path('templates', test_templates),
     path('generate_template', generate_template),
-    path('get_test', get_test),
+    path('generate_test', generate_test),
     path('point_item', PointItem.as_view()),
+    path('get_test', get_test),
     path('check_test_point', check_test_point)
 ]

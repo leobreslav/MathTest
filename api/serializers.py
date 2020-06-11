@@ -47,6 +47,7 @@ class TestItemSerializer(serializers.ModelSerializer):
         model = TestItem
         fields = ['id', 'student_full']
 
+
 class TemplateSerializer(serializers.ModelSerializer):
     items = TestItemSerializer(many=True)
     prototypes = ProblemPrototypeSerializer(many=True)
@@ -63,9 +64,16 @@ class ProblemPointItemSerializer(serializers.ModelSerializer):
 
 
 class ProblemItemSerializer(serializers.ModelSerializer):
-    problem_head = ProblemHeadSerializer()
+    problem_head = ProblemSerializer()
     points = ProblemPointItemSerializer(many=True)
 
     class Meta:
         model = ProblemHeadItem
         fields = ['id', 'index', 'problem_head', 'points']
+
+class TestSerializer(serializers.ModelSerializer):
+    problem_items = ProblemItemSerializer(many=True)
+
+    class Meta:
+        model = TestItem
+        fields = ['id', 'problem_items', 'name']

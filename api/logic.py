@@ -1,9 +1,9 @@
 import random
+from django.db.models.query import QuerySet
 
 from .models import *
 from .exceptions import BadRequestException, NotAllowedException
-from typing import Union, List, Type
-
+from typing import Sequence, Union, List, Type, TypeVar, Callable, Dict, Any
 
 def generate_test_template(author, name, *task_prototypes):
 
@@ -25,12 +25,12 @@ def generate_test_item(template, student):
     prototypes = Prototype2Test.objects.filter(test=template).order_by('index')
 
     for i, prototype in enumerate(prototypes):
-        problem_heads = ProblemHead.objects.filter(prototype=prototype.set)
+        problem_heads: QuerySet[ProblemHead] = ProblemHead.objects.filter(prototype=prototype.set)
 
         if len(problem_heads) == 0:
             raise NotAllowedException("Cannot create a test from a template with empty prototypes")
 
-        problem_head = random.choice(problem_heads)
+        problem_head = random.choice(list(problem_heads))
 
         head_item = ProblemHeadItem.objects.create(test=test_item, problem_head=problem_head, index=i)
 
@@ -40,7 +40,7 @@ def generate_test_item(template, student):
     return test_item
 
 
-def get_data(request, dict_name:str, args:dict):
+def get_data(request, dict_name:str, args:Dict[str, Union[Callable[[str], Any], None]]):
     """
     Function to get data from request
 
@@ -71,7 +71,8 @@ def get_data(request, dict_name:str, args:dict):
     return tuple(ret)
 
 
-def get_model(model: Type[models.Model], ids: Union[int, List[int]], many: bool = False):
+T = TypeVar('T', bound=models.Model)
+def get_model(model: Type[T], ids: Union[int, Sequence[int]], many: bool = False) -> Any:
     """
     Function to get model by id or list of ids
 
@@ -84,11 +85,12 @@ def get_model(model: Type[models.Model], ids: Union[int, List[int]], many: bool 
         one or more models
     """
     if not many:
-        mod = model.objects.filter(id=ids)
+        mod: QuerySet[T] = model.objects.filter(id=ids)
         if len(mod) == 0:
             raise BadRequestException(f"Wrong id of model")
         return mod[0]
-    ret = []
+    ret: List[T] = []
+    assert(isinstance(ids, Sequence))
     for id in ids:
         mod = model.objects.filter(id=id)
         if len(mod) == 0:
