@@ -57,6 +57,6 @@ class Command(BaseCommand):
                         ProblemPoint.objects.create(problem_head=h, answer=point, num_in_problem=k)
 
             if len(names) == 0:
-                self.stdout.write('nothing to import: empty file or all prototypes are already in db')
+                self.stdout.write('\rnothing to import: empty file or all prototypes are already in db')
             else:
                 self.stdout.write('\rsuccessfully imported ' + str(len(prototypes)) + ' prototypes: ' + str(names))
