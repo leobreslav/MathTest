@@ -26,6 +26,8 @@ def check_name_duplicates(prototypes):
                 'import failed\nerror in prototypes #' + str(names.index(prototype['name']) + 1) + ' and #' +
                 str(i + 1) + ': names are equal')
 
+        names.append(prototype['name'])
+
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
