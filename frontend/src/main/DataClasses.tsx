@@ -1,4 +1,3 @@
-
 class ProblemHead{
     id: number = 0;
     problem: string = "";
@@ -69,6 +68,21 @@ class Test {
     problem_items: ProblemItem[] = [];
 }
 
+const MathJaxConfig = {
+    extensions: ["tex2jax.js"],
+    TeX: {
+        extensions: [
+            "autoload-all.js"
+        ]
+    },
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+    }
+}
+
 export{
     ProblemHead,
     ProblemPoint,
@@ -80,5 +94,6 @@ export{
     TestItem,
     ProblemPointItem,
     ProblemItem,
-    Test
+    Test,
+    MathJaxConfig
 };

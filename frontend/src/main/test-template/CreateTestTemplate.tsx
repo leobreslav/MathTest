@@ -1,8 +1,9 @@
 import React from 'react';
-import {ProblemPrototype} from '../DataClasses';
+import {ProblemPrototype, MathJaxConfig} from '../DataClasses';
 import {getHeaders} from '../Functions';
 import {Alert} from 'react-bootstrap'
 import url from "../../Url";
+import MathJaxPreview from 'react-mathjax-preview';
 
 class TestContentState {
     chosenProblems: ProblemPrototype[] = [];
@@ -26,7 +27,6 @@ export class TestTemplate extends React.Component<{}> {
 
 export class TestContent extends React.Component<{}, TestContentState> {
 
-    // TODO change any to required type
     constructor(props: {}) {
         super(props);
         this.state = {
@@ -56,7 +56,9 @@ export class TestContent extends React.Component<{}, TestContentState> {
             return (
                 <li className="list-group-item">
                     <h5>{item.name}</h5>
-                    <p>{item.example.problem}</p>
+                    <p> 
+                        <MathJaxPreview config={MathJaxConfig} math={item.example.problem} />
+                    </p>
                     <button onClick={() => {
                         if (buttonShouldAdd) {
                             this.setState(state => ({
