@@ -73,14 +73,28 @@ const MathJaxConfig = {
     TeX: {
         extensions: [
             "autoload-all.js"
-        ]
+        ],
+        Macros: {
+            tg: ['\mathop{\rm tg}\nolimits', 0],
+            ctg: ['\mathop{\rm ctg}\nolimits', 0],
+            cosec: ['\mathop{\rm cosec}\nolimits', 0],
+            sec: ['\mathop{\rm sec}\nolimits', 0],
+            arctg: ['\mathop{\rm arctg}\nolimits', 0],
+            arcctg: ['\mathop{\rm arcctg}\nolimits', 0],
+            sh: ['\mathop{\rm sh}\nolimits', 0],
+            ch: ['\mathop{\rm ch}\nolimits', 0],
+            th: ['\mathop{\rm th}\nolimits', 0],
+            cth: ['\mathop{\rm cth}\nolimits', 0],
+            sign: ['\mathop{\rm sign}\nolimits', 0]
+            },
     },
     jax: ["input/TeX", "output/HTML-CSS"],
     tex2jax: {
         inlineMath: [ ['$','$'], ["\\(","\\)"] ],
         displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
-        processEscapes: true
-    }
+        processEscapes: true,
+        
+    },
 }
 
 export{
