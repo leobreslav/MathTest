@@ -7,6 +7,7 @@ import {TestTemplatesComponent} from "./test-template/Templates"
 import {Navbar, Nav} from "react-bootstrap"
 import {Link} from 'react-router-dom';
 import {connect} from 'react-redux';
+import {MyTests} from './test_item/MyTests'
 import {TestItemGenerator} from './test_item/TestItemGenerator'
 import {TestComponent} from './test_item/TestComponent'
 
@@ -55,6 +56,7 @@ class UrlsRouter extends React.Component<{logOut: () => void, logIn: () => void}
                         <Nav.Link as={Link} to="/users">All Users</Nav.Link>
                         <Nav.Link as={Link} to="/">Create Template</Nav.Link>
                         <Nav.Link as={Link} to="/templates">My Templates</Nav.Link>
+                        <Nav.Link as={Link} to="/my_tests">My Tests</Nav.Link>
                     </Nav>
 
                     <Link to="/login" onClick={() => {
@@ -73,7 +75,9 @@ class UrlsRouter extends React.Component<{logOut: () => void, logIn: () => void}
                     <Route path="/sets">
                         <Set/>
                     </Route>
-
+                    <Route path='/my_tests'>
+                        <MyTests />
+                    </Route>
                     <Route path="/users">
                         <Users/>
                     </Route>
