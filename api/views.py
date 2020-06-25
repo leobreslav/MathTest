@@ -190,4 +190,4 @@ def tests(request):
         return Response(status=400)
 
     items = TestItem.objects.filter(student_id=profile[0].id)
-    return Response(TestItemSerializer(items, many=True).data)
+    return Response(TestSerializer(items, many=True).data)
