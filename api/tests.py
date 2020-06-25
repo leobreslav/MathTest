@@ -153,16 +153,18 @@ class TestGetTest(APITestCase):
         problem_head.prototype.add(prototype)
         template = TestTemplate.objects.create(author=profile, name='test_template')
         Prototype2Test.objects.create(test=template, set=prototype, index=0)
+        
 
     def test_smoke(self):
         user = User.objects.get(username='test')
         c = APIClient()
         c.force_authenticate(user=user)
 
-        request = c.get('/api/get_test?template_id=1')
+        request = c.get('/api/generate_test?template_id=1')
         self.assertEquals(request.status_code, 200)
 
-        self.assertEquals(request.data[0]['problem_head']['problem'], 'test problem definition')
+        id = request.data['item_id']
+        self.assertEqual(TestItem.objects.get(id=id).problem_items.all()[0].problem_head.problem, 'test problem definition')
 
 
 class AutofillTest(APITestCase):

@@ -6,7 +6,7 @@ class ProblemHead{
 
 class ProblemPoint{
     id: number = 0;
-    num_in_problems: number = 0;
+    num_in_problem: number = 0;
     answer: string = "";
 }
 
@@ -48,6 +48,27 @@ class User {
     last_name: string = "";
 }
 
+class ProblemPointItem {
+    id: number = 0;
+    answer: string = "";
+    score: number = 0;
+    comment: string = "";
+    num_in_problem: number = 0;
+}
+
+class ProblemItem {
+    id: number = 0;
+    index: number = 0;
+    problem_head: Problem= new Problem();
+    points: ProblemPointItem[] = [];
+}
+
+class Test {
+    id: number = 0;
+    name: string = "";
+    problem_items: ProblemItem[] = [];
+}
+
 export{
     ProblemHead,
     ProblemPoint,
@@ -56,5 +77,8 @@ export{
     TestTemplate,
     LoginStatus,
     User,
-    TestItem
+    TestItem,
+    ProblemPointItem,
+    ProblemItem,
+    Test
 };

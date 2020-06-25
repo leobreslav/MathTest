@@ -5,12 +5,15 @@ import Users from "./Users";
 import Login from "../login/Login";
 import {TestTemplatesComponent} from "./test-template/Templates"
 import {Navbar, Nav} from "react-bootstrap"
-import {connect} from 'react-redux'
+import {Link} from 'react-router-dom';
+import {connect} from 'react-redux';
+import {TestItemGenerator} from './test_item/TestItemGenerator'
+import {TestComponent} from './test_item/TestComponent'
+
 import {
     BrowserRouter as Router,
     Switch,
     Route,
-    Link,
     Redirect
 } from 'react-router-dom';
 import {TestTemplate} from "./test-template/CreateTestTemplate";
@@ -59,12 +62,14 @@ class UrlsRouter extends React.Component<{logOut: () => void, logIn: () => void}
                     }}>
                         Exit
                     </Link>
-
-                </Navbar>
-                <Switch>
-                    <Route path="/templates">
-                        <TestTemplatesComponent/>
-                    </Route>
+                    </Navbar>
+                    <Switch>
+                        <Route path="/templates">
+                            <TestTemplatesComponent/>
+                        </Route>
+                        <Route path="/generate_test" component={TestItemGenerator}>
+                        </Route>
+                        <Route path="/test" component={TestComponent}></Route>
                     <Route path="/sets">
                         <Set/>
                     </Route>

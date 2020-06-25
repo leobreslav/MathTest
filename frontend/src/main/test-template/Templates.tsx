@@ -1,8 +1,10 @@
 import React from 'react';
 import '../../App.css';
 import {TestTemplate} from '../DataClasses';
-import {getHeaders, loading} from '../Functions';
-import {Container, Card, Row} from 'react-bootstrap'
+import {getHeaders} from '../Functions';
+import {Spinner, Container, Card, Row, Button} from 'react-bootstrap'
+import {Link} from 'react-router-dom'
+import {loading} from '../Functions';
 import url from "../../Url";
 
 export class TestTemplatesComponent extends React.Component<{}, {is_loading:boolean, data: TestTemplate[]}> {
@@ -37,6 +39,9 @@ export class TestTemplatesComponent extends React.Component<{}, {is_loading:bool
                             </p>
                             <p>
                                 Prototypes: {item.prototypes.length}
+                            </p>
+                            <p>
+                                Link to test: <Link to={"/generate_test?id="+item.id}>{"/generate_test?id="+item.id}</Link>
                             </p>
                         </Card.Text>
                     </Card>

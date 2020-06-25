@@ -10,3 +10,4 @@ frontend/build
 frontend/node_modules
 media
 .vscode
+.mypy*
