@@ -9,8 +9,9 @@ from rest_framework.views import APIView
 
 from api.logic import generate_test_item
 from api.models import ProblemPrototype, ProblemHead, TestTemplate, Profile, ProblemHeadItem, ProblemPointItem, TestItem
-from api.serializers import ProblemPrototypeSerializer, ProblemHeadSerializer, ProblemPointItemSerializer, UserSerializer, TemplateSerializer, \
-    ProblemItemSerializer
+from api.serializers import ProblemPrototypeSerializer, ProblemHeadSerializer, ProblemPointItemSerializer, \
+    UserSerializer, TemplateSerializer, \
+    ProblemItemSerializer, TestItemSerializer
 
 from .decorators import catch_errors
 from .exceptions import NotAllowedException, BadRequestException
@@ -171,3 +172,15 @@ def check_test_point(request):
     pp_item.save()
 
     return Response(ProblemPointItemSerializer(pp_item).data)
+
+
+@api_view(["GET"])
+@authentication_classes([TokenAuthSupportCookie])
+@permission_classes([IsAuthenticated])
+def tests(request):
+    profile = Profile.objects.filter(user_id=request.user.id)
+    if len(profile) != 1:
+        return Response(status=400)
+
+    items = TestItem.objects.filter(student_id=profile[0].id)
+    return Response(TestItemSerializer(items, many=True).data)

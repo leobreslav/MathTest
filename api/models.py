@@ -81,9 +81,6 @@ class TestTemplate(models.Model):
     @property
     def prototypes(self):
         return map(lambda p2t: p2t.set, Prototype2Test.objects.filter(test=self))
-    
-
-
 
     def __str__(self):
         return self.name
@@ -97,6 +94,28 @@ class TestItem(models.Model):
     @property
     def student_full(self):
         return self.student.user
+
+    @property
+    def is_completed(self):
+        problem_heads = ProblemHeadItem.objects.filter(test=self)
+        for head in problem_heads:
+            points = ProblemPointItem.objects.filter(problem_item=head)
+            for point in points:
+                if not point.is_answered:
+                    return False
+
+        return True
+    
+    @property
+    def score(self):
+        score = 0
+        problem_heads = ProblemHeadItem.objects.filter(test=self)
+        for head in problem_heads:
+            points = ProblemPointItem.objects.filter(problem_item=head)
+            for point in points:
+                score += point.score
+
+        return score
 
     class Meta:
         verbose_name = "Test instance"

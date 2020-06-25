@@ -45,7 +45,8 @@ class TestItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TestItem
-        fields = ['id', 'student_full']
+        fields = ['id', 'student_full', 'is_completed', 'score']
+
 
 class TemplateSerializer(serializers.ModelSerializer):
     items = TestItemSerializer(many=True)
