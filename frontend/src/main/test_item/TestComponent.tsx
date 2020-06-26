@@ -102,6 +102,9 @@ export class TestComponent extends React.Component<RouteComponentProps, {isLoadi
                         name="problem_point"
                         id={JSON.stringify({problem: problemItem.id, point: item.id})}
                         defaultValue={item.answer} />
+                    <Form.Text>
+                        Teacher comment: {item.comment}
+                    </Form.Text>
                 </Form.Group>
             )
         })

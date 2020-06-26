@@ -67,6 +67,21 @@ class Test {
     id: number = 0;
     name: string = "";
     problem_items: ProblemItem[] = [];
+
+    score() {
+        return this.problem_items.map(
+            val => val.points.map(
+                val => val.score
+            ).reduce( (a,b) => a+b)
+        ).reduce( (a,b) => a+b)
+    }
+    isComplete() {
+        return this.problem_items.map(
+            item => item.points.map(
+                point => point.answer != ""
+            ).reduce((a, b) => a && b)
+        ).reduce((a, b) => a && b)
+    }
 }
 
 export{
