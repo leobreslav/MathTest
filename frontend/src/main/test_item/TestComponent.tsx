@@ -1,10 +1,11 @@
 import React from 'react';
-import {Test, ProblemItem} from '../DataClasses';
+import {Test, ProblemItem, MathJaxConfig} from '../DataClasses';
 import {Spinner, Button, Card, Form, Container} from 'react-bootstrap';
 import {getHeaders} from '../Functions';
 import { RouteComponentProps } from 'react-router-dom';
 import * as qs from 'qs';
 import { isString } from 'util';
+import MathJax from 'react-mathjax-preview';
 
 export class TestComponent extends React.Component<RouteComponentProps, {isLoading: boolean, test: Test}> {
 
@@ -114,7 +115,13 @@ export class TestComponent extends React.Component<RouteComponentProps, {isLoadi
                     <Form.Group>
                         <Form.Label>Problem {problem.index+1}</Form.Label>
                         <Form.Text>
-                            {problem.problem_head.problem}
+                            <MathJax 
+                            config={
+                                MathJaxConfig
+                            }
+                            math={problem.problem_head.problem}>
+                                
+                            </MathJax>
                         </Form.Text>
                         {this.renderPoints(problem)}
                         <Button id={problem.id.toString()} onClick={this.onProblemButtonClick}>Save Answer</Button>
