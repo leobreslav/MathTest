@@ -39,7 +39,7 @@ class Task extends React.Component<{id: number}, TaskState> {
         } else {
             return data.map((item: ProblemHead) => {
                 return <li
-                    key={item.id}> {(item.problem.length - 20 > 3 ? item.problem.substring(0, 19) + "..." : item.problem)}</li>
+                    key={item.id}> {(item.problem.length - 20 > 3 ? item.problem.substring(0, 33) + "..." : item.problem)}</li>
             })
         }
     }
